@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-import sequelize from '../config/database.js';
+import sequelize from '../config/config.js'; // Certifique-se de que está importando a instância correta
 
 class Product extends Model {}
 
@@ -107,8 +107,10 @@ Product.init(
         model: 'tenants',
         key: 'id',
       },
-    },        
-    sequelize,
+    },
+  },
+  {
+    sequelize, // Certifique-se de que a instância está sendo passada aqui
     modelName: 'Product',
     tableName: 'products',
   }

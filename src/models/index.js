@@ -1,5 +1,11 @@
 'use strict';
 
+import { Sequelize } from 'sequelize';
+import sequelize from '../config/config.js';
+import Tenant from './Tenant.js';
+import Sale from './Sale.js';
+import User from './User.js';
+
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
@@ -36,6 +42,14 @@ Object.keys(db).forEach(modelName => {
     db[modelName].associate(db);
   }
 });
+
+// Configurar associações
+Tenant.hasMany(Sale, { foreignKey: 'tenantId' });
+Sale.belongsTo(Tenant, { foreignKey: 'tenantId' });
+
+Sale.belongsTo(User, { foreignKey: 'userId' });
+
+export { sequelize, Tenant, Sale, User };
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

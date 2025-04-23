@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js';
+import sequelize from '../config/config.js';
 
 const Tenant = sequelize.define('Tenant', {
   id: {
@@ -14,12 +14,12 @@ const Tenant = sequelize.define('Tenant', {
   plano: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'free', // ou 'pro', 'enterprise', etc.
+    defaultValue: 'free',
   },
   status: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'ativo', // ou 'suspenso', 'inativo'
+    defaultValue: 'ativo',
   },
 }, {
   tableName: 'tenants',

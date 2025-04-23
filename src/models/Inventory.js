@@ -1,6 +1,6 @@
 // models/Inventory.js
 import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js';
+import sequelize from '../config/config.js';
 import Product from './Product.js';
 import Tenant from './Tenant.js';
 

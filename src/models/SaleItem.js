@@ -1,20 +1,20 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js';
+import sequelize from '../config/config.js';
 import Sale from './Sale.js';
 import Product from './Product.js';
 
 const SaleItem = sequelize.define('SaleItem', {
   id: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
   },
   saleId: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
   productId: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
   quantity: {

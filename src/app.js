@@ -4,7 +4,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import routes from './routes/index.js';
-import sequelize from './config/database.js';
+import sequelize from './config/config.js';
 
 dotenv.config();
 

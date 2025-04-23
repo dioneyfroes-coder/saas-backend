@@ -1,15 +1,15 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js';
+import sequelize from '../config/config.js';
 import Tenant from './Tenant.js';
 
 const FinanceRecord = sequelize.define('FinanceRecord', {
-  id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+  id: { type: DataTypes.INTEGER, defaultValue: DataTypes.UUIDV4, primaryKey: true },
   description: { type: DataTypes.STRING, allowNull: false },
   type: { type: DataTypes.ENUM('entrada', 'saida'), allowNull: false },
   value: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
   date: { type: DataTypes.DATEONLY, allowNull: false },
   tenantId: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     allowNull: false,
     references: {
       model: Tenant,
@@ -25,7 +25,7 @@ const FinanceRecord = sequelize.define('FinanceRecord', {
     allowNull: true, // Campo opcional
   },
   saleId: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     allowNull: true, // Associação opcional
     references: {
       model: 'sales',

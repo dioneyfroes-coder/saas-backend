@@ -2,12 +2,33 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('finance_records', {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('users', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+      },
+      username: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      nomeCompleto: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      senha: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      role: {
+        type: Sequelize.ENUM('admin', 'estoquista', 'caixa'),
+        allowNull: false,
+      },
+      ativo: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true,
       },
       tenantId: {
         type: Sequelize.INTEGER,
@@ -16,26 +37,6 @@ module.exports = {
           model: 'tenants',
           key: 'id',
         },
-      },
-      category: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      type: {
-        type: Sequelize.ENUM('entrada', 'saida'),
-        allowNull: false,
-      },
-      value: {
-        type: Sequelize.FLOAT,
-        allowNull: false,
-      },
-      date: {
-        type: Sequelize.DATE,
-        allowNull: false,
-      },
-      note: {
-        type: Sequelize.TEXT,
-        allowNull: true,
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -50,12 +51,7 @@ module.exports = {
     });
   },
 
-  async down (queryInterface, Sequelize) {
-    /**
-     * Add reverting commands here.
-     *
-     * Example:
-     * await queryInterface.dropTable('users');
-     */
-  }
+  async down(queryInterface) {
+    await queryInterface.dropTable('users');
+  },
 };

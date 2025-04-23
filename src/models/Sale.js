@@ -1,21 +1,19 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js';
-import Tenant from './Tenant.js';
-import User from './User.js';
+import sequelize from '../config/config.js';
 
 const Sale = sequelize.define('Sale', {
   id: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
   },
   tenantId: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
   userId: {
-    type: DataTypes.UUID,
-    allowNull: true, // ou false se obrigatório
+    type: DataTypes.INTEGER,
+    allowNull: true,
   },
   total: {
     type: DataTypes.DECIMAL(10, 2),
@@ -26,10 +24,8 @@ const Sale = sequelize.define('Sale', {
     defaultValue: 'pendente',
   },
 }, {
+  tableName: 'sales',
   timestamps: true,
 });
-
-Sale.belongsTo(Tenant, { foreignKey: 'tenantId' });
-Sale.belongsTo(User, { foreignKey: 'userId' });
 
 export default Sale;
