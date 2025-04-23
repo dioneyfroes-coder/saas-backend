@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.1.9",
+    "sequelize": "^6.37.7"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.6.2"
+  },
+    "sequelize": {
+      "config": "src/config/config.js",
+      "migrations-path": "src/migrations",
+      "seeders-path": "src/seeders",
+      "models-path": "src/models"
+    }
+}
