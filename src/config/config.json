@@ -1,26 +1,16 @@
 {
   "development": {
-    "username": "${DB_USER}",
-    "password": "${DB_PASS}",
-    "database": "${DB_NAME}",
-    "host": "${DB_HOST}",
-    "dialect": "${DB_DRIVER}",
-    "port": "${DB_PORT}"
+    "username": "root",
+    "password": "753159",
+    "database": "loja",
+    "host": "localhost",
+    "dialect": "mysql",
+    "port": "3306"
   },
   "test": {
-    "username": "${DB_USER}",
-    "password": "${DB_PASS}",
-    "database": "${DB_NAME}_test",
-    "host": "${DB_HOST}",
-    "dialect": "${DB_DRIVER}",
-    "port": "${DB_PORT}"
+    
   },
   "production": {
-    "username": "${DB_USER}",
-    "password": "${DB_PASS}",
-    "database": "${DB_NAME}_production",
-    "host": "${DB_HOST}",
-    "dialect": "${DB_DRIVER}",
-    "port": "${DB_PORT}"
+    
   }
 }

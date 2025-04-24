@@ -1,7 +1,7 @@
 import Sale from '../models/Sale.js';
 import SaleItem from '../models/SaleItem.js';
 import Product from '../models/Product.js';
-import sequelize from '../config/config.js';
+import sequelize from '../config/database.js';
 
 const SaleRepository = {
   async create(saleData, items) {

@@ -3,32 +3,27 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('users', {
+    await queryInterface.createTable('financerecords', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      username: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      nomeCompleto: {
+      description: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      senha: {
-        type: Sequelize.STRING,
+      type: {
+        type: Sequelize.ENUM('entrada', 'saida'),
         allowNull: false,
       },
-      role: {
-        type: Sequelize.ENUM('admin', 'estoquista', 'caixa'),
+      value: {
+        type: Sequelize.DECIMAL(10, 2),
         allowNull: false,
       },
-      ativo: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: true,
+      date: {
+        type: Sequelize.DATEONLY,
+        allowNull: false,
       },
       tenantId: {
         type: Sequelize.INTEGER,
@@ -39,6 +34,24 @@ module.exports = {
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
+      },
+      category: {
+        type: Sequelize.ENUM('Aluguel', 'Vendas', 'Marketing'),
+        allowNull: false,
+      },
+      note: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+      saleId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'sales',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL',
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -54,6 +67,6 @@ module.exports = {
   },
 
   async down (queryInterface) {
-    await queryInterface.dropTable('users');
+    await queryInterface.dropTable('financerecords');
   }
 };

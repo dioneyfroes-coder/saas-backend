@@ -1,21 +1,14 @@
-import { Sequelize } from 'sequelize';
-import dotenv from 'dotenv';
-
+const dotenv = require('dotenv');
 dotenv.config();
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASS,
-  {
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    dialect: 'mysql',
-    logging: false, // Desativa logs de SQL
-  }
-);
-
-// Removido o uso de sequelize.sync({ alter: true })
-// O gerenciamento do banco de dados será feito exclusivamente por migrações
-
-export default sequelize;
+module.exports = {
+  development: {
+    username: process.env.DB_USER || 'root',
+    password: process.env.DB_PASS || '753159',
+    database: process.env.DB_NAME || 'loja',
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 3306,
+    dialect: process.env.DB_DIALECT || 'mysql',
+    logging: false,
+  },
+};

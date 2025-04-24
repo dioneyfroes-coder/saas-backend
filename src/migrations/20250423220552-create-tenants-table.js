@@ -3,42 +3,25 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('users', {
+    await queryInterface.createTable('tenants', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      username: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      nomeCompleto: {
+      nome: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      senha: {
+      plano: {
         type: Sequelize.STRING,
         allowNull: false,
+        defaultValue: 'free',
       },
-      role: {
-        type: Sequelize.ENUM('admin', 'estoquista', 'caixa'),
+      status: {
+        type: Sequelize.STRING,
         allowNull: false,
-      },
-      ativo: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: true,
-      },
-      tenantId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'tenants',
-          key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        defaultValue: 'ativo',
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -54,6 +37,6 @@ module.exports = {
   },
 
   async down (queryInterface) {
-    await queryInterface.dropTable('users');
+    await queryInterface.dropTable('tenants');
   }
 };

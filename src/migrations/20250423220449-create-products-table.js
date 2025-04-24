@@ -3,32 +3,32 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('users', {
+    await queryInterface.createTable('products', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      username: {
+      codigobarras: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true,
       },
-      nomeCompleto: {
+      name: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      senha: {
-        type: Sequelize.STRING,
+      quantity: {
+        type: Sequelize.INTEGER,
         allowNull: false,
       },
-      role: {
-        type: Sequelize.ENUM('admin', 'estoquista', 'caixa'),
+      price: {
+        type: Sequelize.FLOAT,
         allowNull: false,
       },
-      ativo: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: true,
+      description: {
+        type: Sequelize.TEXT,
+        allowNull: true,
       },
       tenantId: {
         type: Sequelize.INTEGER,
@@ -54,6 +54,6 @@ module.exports = {
   },
 
   async down (queryInterface) {
-    await queryInterface.dropTable('users');
+    await queryInterface.dropTable('products');
   }
 };

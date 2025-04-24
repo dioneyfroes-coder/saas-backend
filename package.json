@@ -23,7 +23,8 @@
     "db:migrate": "dotenv -e .env npx sequelize-cli db:migrate",
     "db:seed": "dotenv -e .env npx sequelize-cli db:seed:all",
     "db:undo": "dotenv -e .env npx sequelize-cli db:migrate:undo",
-    "dev": "nodemon src/app.js"
+    "dev": "nodemon src/app.js",
+    "migrate": "sequelize-cli db:migrate --config config/config.js"
   },
-  "type": "module"
+  "type": "commonjs"
 }

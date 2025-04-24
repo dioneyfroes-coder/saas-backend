@@ -4,7 +4,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import routes from './routes/index.js';
-import sequelize from './config/config.js';
+import sequelize from './config/database.js';
 
 dotenv.config();
 
@@ -40,6 +40,9 @@ sequelize.authenticate()
     app.listen(PORT, () => {
       console.log(`Servidor rodando na porta ${PORT}`);
     });
+  })
+  .then((users) => {
+    console.log('Usuários encontrados:', users);
   })
   .catch((err) => {
     console.error('Erro ao conectar ao banco de dados:', err);

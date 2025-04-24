@@ -1,7 +1,7 @@
 'use strict';
 
 import { Sequelize } from 'sequelize';
-import sequelize from '../config/config.js';
+import sequelize from '../config/database.js';
 import Tenant from './Tenant.js';
 import Sale from './Sale.js';
 import User from './User.js';

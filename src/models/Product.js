@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-import sequelize from '../config/config.js'; // Certifique-se de que está importando a instância correta
+import sequelize from '../config/database.js'; // Certifique-se de que está importando a instância correta
 
 class Product extends Model {}
 
