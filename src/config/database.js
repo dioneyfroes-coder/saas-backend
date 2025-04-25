@@ -15,7 +15,6 @@ const sequelize = new Sequelize(
   }
 );
 
-// Removido o uso de sequelize.sync({ alter: true })
-// O gerenciamento do banco de dados será feito exclusivamente por migrações
+//sequelize.sync({ force: true }) // O gerenciamento do banco de dados será feito exclusivamente por migrações
 
 export default sequelize;

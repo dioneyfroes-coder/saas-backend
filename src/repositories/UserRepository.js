@@ -13,8 +13,8 @@ class UserRepository {
     return await User.findOne({ where: { username, tenantId } });
   }
 
-  async create(data, tenantId) {
-    return await User.create({ ...data, tenantId });
+  async create(data) {
+    return await User.create(data);
   }
 
   async update(id, data, tenantId) {

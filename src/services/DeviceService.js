@@ -1,47 +1,50 @@
 import DeviceRepository from '../repositories/DeviceRepository.js';
-import DeviceAccessLog from '../models/DeviceAccessLog.js';
+import DeviceAccessLog from '../models/Device_Access_Log.js';
 
 class DeviceService {
-    
-    async authenticateDevice(identificador, chaveSecreta, ip) {
-        const device = await DeviceRepository.findByIdentificador(identificador);
+  async authenticateDevice(identificador, chaveSecreta, ip, tenantId) {
+    const device = await DeviceRepository.findByIdentificador(identificador, tenantId);
 
-        const sucesso = !!device && device.ativo && (!device.chaveSecreta || device.chaveSecreta === chaveSecreta);
+    const sucesso = !!device && device.ativo && (!device.chaveSecreta || device.chaveSecreta === chaveSecreta);
 
-        // log de acesso
-        await DeviceAccessLog.create({
-            sucesso,
-            deviceId: device ? device.id : null,
-            ip,
-            mensagem: sucesso ? 'Autenticado com sucesso' : 'Falha na autenticação'
-        });
+    // Log de acesso
+    await DeviceAccessLog.create({
+      sucesso,
+      deviceId: device ? device.id : null,
+      tenantId,
+      ip,
+      mensagem: sucesso ? 'Autenticado com sucesso' : 'Falha na autenticação',
+    });
 
-        return sucesso ? device : null;
-    }
+    return sucesso ? device : null;
+  }
 
-    async getAllDevices() {
-        return await DeviceRepository.findAll();
-    }
+  async getAllDevices(tenantId) {
+    return await DeviceRepository.findAll(tenantId);
+  }
 
-    async getDeviceById(id) {
-        return await DeviceRepository.findById(id);
-    }
+  async getDeviceById(id, tenantId) {
+    return await DeviceRepository.findById(id, tenantId);
+  }
 
-    async getDeviceByIdentificador(identificador) {
-        return await DeviceRepository.findByIdentificador(identificador);
-    }
+  async createDevice(data, tenantId) {
+    return await DeviceRepository.create({ ...data, tenantId });
+  }
 
-    async createDevice(data) {
-        return await DeviceRepository.create(data);
-    }
+  async updateDevice(id, data, tenantId) {
+    return await DeviceRepository.update(id, data, tenantId);
+  }
 
-    async updateDevice(id, data) {
-        return await DeviceRepository.update(id, data);
-    }
+  async deleteDevice(id, tenantId) {
+    return await DeviceRepository.delete(id, tenantId);
+  }
 
-    async deleteDevice(id) {
-        return await DeviceRepository.delete(id);
-    }
+  async getAccessLogs(deviceId, tenantId) {
+    return await DeviceAccessLog.findAll({
+      where: { deviceId, tenantId },
+      order: [['accessedAt', 'DESC']],
+    });
+  }
 }
 
 export default new DeviceService();

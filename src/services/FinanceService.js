@@ -1,4 +1,3 @@
-// services/FinanceService.js
 import FinanceRepository from '../repositories/FinanceRepository.js';
 
 export default {
@@ -11,7 +10,9 @@ export default {
   },
 
   async getFinanceRecordById(id, tenantId) {
-    return await FinanceRepository.findById(id, tenantId);
+    const record = await FinanceRepository.findById(id, tenantId);
+    if (!record) throw new Error('Registro financeiro não encontrado');
+    return record;
   },
 
   async updateFinanceRecord(id, data, tenantId) {

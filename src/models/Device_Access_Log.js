@@ -13,17 +13,21 @@ const DeviceAccessLog = sequelize.define('DeviceAccessLog', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'devices',
+      model: Device,
       key: 'id',
     },
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
   },
   tenantId: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'tenants',
+      model: Tenant,
       key: 'id',
     },
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
   },
   accessedAt: {
     type: DataTypes.DATE,
@@ -33,11 +37,17 @@ const DeviceAccessLog = sequelize.define('DeviceAccessLog', {
   ip: {
     type: DataTypes.STRING,
     allowNull: true,
+    validate: {
+      isIP: true,
+    },
   },
   userAgent: {
     type: DataTypes.STRING,
     allowNull: true,
   },
+}, {
+  tableName: 'device_access_logs',
+  timestamps: false,
 });
 
 DeviceAccessLog.belongsTo(Device, { foreignKey: 'deviceId' });

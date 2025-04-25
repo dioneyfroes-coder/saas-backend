@@ -1,19 +1,18 @@
 // services/InventoryService.js
-import Inventory from '../models/Inventory.js';
+import InventoryRepository from '../repositories/InventoryRepository.js';
 import InventoryMovement from '../models/InventoryMovement.js';
 
 const InventoryService = {
   async getStockByProduct(productId, tenantId) {
-    return await Inventory.findOne({ where: { productId, tenantId } });
+    return await InventoryRepository.findByProduct(productId, tenantId);
   },
 
   async addStock(productId, quantity, tenantId, description = 'Entrada manual') {
-    let inventory = await Inventory.findOne({ where: { productId, tenantId } });
+    let inventory = await InventoryRepository.findByProduct(productId, tenantId);
     if (!inventory) {
-      inventory = await Inventory.create({ productId, tenantId, quantity: 0 });
+      inventory = await InventoryRepository.create({ productId, tenantId, quantity: 0 });
     }
-    inventory.quantity += quantity;
-    await inventory.save();
+    inventory = await InventoryRepository.update(inventory, inventory.quantity + quantity);
 
     await InventoryMovement.create({
       inventoryId: inventory.id,
@@ -27,13 +26,12 @@ const InventoryService = {
   },
 
   async removeStock(productId, quantity, tenantId, type = 'saida', description = 'Saída manual') {
-    const inventory = await Inventory.findOne({ where: { productId, tenantId } });
+    const inventory = await InventoryRepository.findByProduct(productId, tenantId);
     if (!inventory || inventory.quantity < quantity) {
-      throw new Error('Estoque insuficiente');
+      throw new Error('Estoque insuficiente ou não pertence ao tenant');
     }
 
-    inventory.quantity -= quantity;
-    await inventory.save();
+    inventory = await InventoryRepository.update(inventory, inventory.quantity - quantity);
 
     await InventoryMovement.create({
       inventoryId: inventory.id,
@@ -47,11 +45,8 @@ const InventoryService = {
   },
 
   async getMovements(inventoryId, tenantId) {
-    return await InventoryMovement.findAll({
-      where: { inventoryId, tenantId },
-      order: [['createdAt', 'DESC']],
-    });
-  }
+    return await InventoryRepository.findMovements(inventoryId, tenantId);
+  },
 };
 
 export default InventoryService;

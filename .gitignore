@@ -9,3 +9,6 @@ logs/
 # Sistema operacional
 .DS_Store
 Thumbs.db
+
+# folders
+seeders/

@@ -10,11 +10,11 @@ class ProductRepository {
   }
 
   async findByCodigoBarras(codigoBarras, tenantId) {
-    return await Product.findOne({ where: { codigoBarras, tenantId } });
+    return await Product.findOne({ where: { codigobarras: codigoBarras, tenantId } });
   }
 
-  async create(data, tenantId) {
-    return await Product.create({ ...data, tenantId });
+  async create(data) {
+    return await Product.create(data);
   }
 
   async update(id, data, tenantId) {

@@ -1,57 +1,89 @@
 'use strict';
 
-import { Sequelize } from 'sequelize';
 import sequelize from '../config/database.js';
 import Tenant from './Tenant.js';
 import Sale from './Sale.js';
+import SaleItem from './SaleItem.js';
+import Product from './Product.js';
+import Inventory from './Inventory.js';
+import InventoryMovement from './InventoryMovement.js';
+import Device from './Device.js';
+import DeviceAccessLog from './DeviceAccessLog.js';
+import FinanceRecord from './FinanceRecord.js';
+import Customer from './Customer.js';
 import User from './User.js';
 
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
-const process = require('process');
-const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
-let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
+// Adiciona os modelos ao objeto db
+db.Tenant = Tenant;
+db.Sale = Sale;
+db.SaleItem = SaleItem;
+db.Product = Product;
+db.Inventory = Inventory;
+db.InventoryMovement = InventoryMovement;
+db.Device = Device;
+db.DeviceAccessLog = DeviceAccessLog;
+db.FinanceRecord = FinanceRecord;
+db.Customer = Customer;
+db.User = User;
 
-fs
-  .readdirSync(__dirname)
-  .filter(file => {
-    return (
-      file.indexOf('.') !== 0 &&
-      file !== basename &&
-      file.slice(-3) === '.js' &&
-      file.indexOf('.test.js') === -1
-    );
-  })
-  .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
-  });
+// Configura associações entre os modelos
 
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
-});
-
-// Configurar associações
+// Tenant
 Tenant.hasMany(Sale, { foreignKey: 'tenantId' });
+Tenant.hasMany(Product, { foreignKey: 'tenantId' });
+Tenant.hasMany(User, { foreignKey: 'tenantId' });
+Tenant.hasMany(Customer, { foreignKey: 'tenantId' });
+Tenant.hasMany(FinanceRecord, { foreignKey: 'tenantId' });
+Tenant.hasMany(Device, { foreignKey: 'tenantId' });
+Tenant.hasMany(Inventory, { foreignKey: 'tenantId' });
+Tenant.hasMany(InventoryMovement, { foreignKey: 'tenantId' });
+Tenant.hasMany(DeviceAccessLog, { foreignKey: 'tenantId' });
+
+// Sale
 Sale.belongsTo(Tenant, { foreignKey: 'tenantId' });
-
 Sale.belongsTo(User, { foreignKey: 'userId' });
+Sale.hasMany(SaleItem, { foreignKey: 'saleId' });
 
-export { sequelize, Tenant, Sale, User };
+// SaleItem
+SaleItem.belongsTo(Sale, { foreignKey: 'saleId' });
+SaleItem.belongsTo(Product, { foreignKey: 'productId' });
+SaleItem.belongsTo(Tenant, { foreignKey: 'tenantId' });
 
+// Product
+Product.belongsTo(Tenant, { foreignKey: 'tenantId' });
+Product.hasMany(Inventory, { foreignKey: 'productId' });
+
+// Inventory
+Inventory.belongsTo(Product, { foreignKey: 'productId' });
+Inventory.belongsTo(Tenant, { foreignKey: 'tenantId' });
+Inventory.hasMany(InventoryMovement, { foreignKey: 'inventoryId' });
+
+// InventoryMovement
+InventoryMovement.belongsTo(Inventory, { foreignKey: 'inventoryId' });
+InventoryMovement.belongsTo(Tenant, { foreignKey: 'tenantId' });
+
+// Device
+Device.belongsTo(Tenant, { foreignKey: 'tenantId' });
+Device.hasMany(DeviceAccessLog, { foreignKey: 'deviceId' });
+
+// DeviceAccessLog
+DeviceAccessLog.belongsTo(Device, { foreignKey: 'deviceId' });
+DeviceAccessLog.belongsTo(Tenant, { foreignKey: 'tenantId' });
+
+// FinanceRecord
+FinanceRecord.belongsTo(Tenant, { foreignKey: 'tenantId' });
+FinanceRecord.belongsTo(Sale, { foreignKey: 'saleId', allowNull: true });
+
+// Customer
+Customer.belongsTo(Tenant, { foreignKey: 'tenantId' });
+
+// User
+User.belongsTo(Tenant, { foreignKey: 'tenantId' });
+User.hasMany(Sale, { foreignKey: 'userId' });
+
+// Exporta os modelos e a instância do Sequelize
 db.sequelize = sequelize;
-db.Sequelize = Sequelize;
 
-module.exports = db;
+export default db;

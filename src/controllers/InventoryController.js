@@ -5,15 +5,23 @@ class InventoryController {
   async getStock(req, res) {
     const { productId } = req.params;
     const { tenantId } = req;
-    const stock = await InventoryService.getStockByProduct(productId, tenantId);
-    res.json(stock || { quantity: 0 });
+    try {
+      const stock = await InventoryService.getStockByProduct(productId, tenantId);
+      res.json(stock || { quantity: 0 });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
   }
 
   async addStock(req, res) {
     const { productId, quantity, description } = req.body;
     const { tenantId } = req;
-    const updated = await InventoryService.addStock(productId, quantity, tenantId, description);
-    res.json(updated);
+    try {
+      const updated = await InventoryService.addStock(productId, quantity, tenantId, description);
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
   }
 
   async removeStock(req, res) {
@@ -30,8 +38,12 @@ class InventoryController {
   async getMovements(req, res) {
     const { inventoryId } = req.params;
     const { tenantId } = req;
-    const movements = await InventoryService.getMovements(inventoryId, tenantId);
-    res.json(movements);
+    try {
+      const movements = await InventoryService.getMovements(inventoryId, tenantId);
+      res.json(movements);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
   }
 }
 

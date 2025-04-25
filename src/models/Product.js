@@ -1,119 +1,58 @@
-import { DataTypes, Model } from 'sequelize';
-import sequelize from '../config/database.js'; // Certifique-se de que está importando a instância correta
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/database.js';
+import Tenant from './Tenant.js';
 
-class Product extends Model {}
-
-Product.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    codigobarras: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    quantity: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    price: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-    },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    url_image: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    category: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
-    deletedAt: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    status: {
-      type: DataTypes.ENUM('active', 'inactive'),
-      defaultValue: 'active',
-    },
-    fornecedor: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    validade: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    peso: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
-    precoCusto: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
-    precoVenda: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
-    precoPromocao: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
-    estoque_rastreado: {
-      type: DataTypes.BOOLEAN,
-      allowNull: true,
-      defaultValue: false,
-    },
-    estoque_minimo: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
-    estoque_maximo: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
-    estoque_atual: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
-    estoque_reservado: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
-    tenantId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'tenants',
-        key: 'id',
-      },
+const Product = sequelize.define('Product', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  codigobarras: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+    validate: {
+      notEmpty: true,
     },
   },
-  {
-    sequelize, // Certifique-se de que a instância está sendo passada aqui
-    modelName: 'Product',
-    tableName: 'products',
-  }
-);
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
+  },
+  quantity: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+    validate: {
+      min: 0,
+    },
+  },
+  price: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+    validate: {
+      min: 0,
+    },
+  },
+  tenantId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Tenant,
+      key: 'id',
+    },
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+  },
+}, {
+  tableName: 'products',
+  timestamps: true,
+});
+
+Product.belongsTo(Tenant, { foreignKey: 'tenantId' });
 
 export default Product;

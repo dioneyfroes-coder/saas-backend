@@ -1,4 +1,5 @@
 import SaleRepository from '../repositories/SaleRepository.js';
+import FinanceRecord from '../models/Finance_Record.js';
 
 const SaleService = {
   async createSale({ tenantId, userId, items }) {
@@ -12,6 +13,18 @@ const SaleService = {
     };
 
     const sale = await SaleRepository.create(saleData, items);
+
+    // Cria um registro financeiro associado à venda
+    await FinanceRecord.create({
+      description: 'Venda realizada',
+      type: 'entrada',
+      value: total,
+      date: new Date(),
+      tenantId,
+      saleId: sale.id,
+      category: 'Vendas',
+    });
+
     return sale;
   },
 

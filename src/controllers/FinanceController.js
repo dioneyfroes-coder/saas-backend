@@ -1,69 +1,79 @@
-// controllers/FinanceController.js
 import FinanceService from '../services/FinanceService.js';
 
 class FinanceController {
   async create(req, res) {
-    const record = await FinanceService.createFinanceRecord(req.body, req.tenantId);
-    res.status(201).json(record);
+    try {
+      const record = await FinanceService.createFinanceRecord(req.body, req.tenantId);
+      res.status(201).json(record);
+    } catch (error) {
+      res.status(500).json({ message: 'Erro ao criar registro financeiro', error: error.message });
+    }
   }
 
   async getAll(req, res) {
-    const records = await FinanceService.getFinanceRecords(req.tenantId);
-    res.json(records);
+    try {
+      const records = await FinanceService.getFinanceRecords(req.tenantId);
+      res.json(records);
+    } catch (error) {
+      res.status(500).json({ message: 'Erro ao buscar registros financeiros', error: error.message });
+    }
   }
 
   async getById(req, res) {
-    const record = await FinanceService.getFinanceRecordById(req.params.id, req.tenantId);
-    if (!record) return res.status(404).json({ message: 'Registro não encontrado' });
-    res.json(record);
+    try {
+      const record = await FinanceService.getFinanceRecordById(req.params.id, req.tenantId);
+      if (!record) return res.status(404).json({ message: 'Registro não encontrado' });
+      res.json(record);
+    } catch (error) {
+      res.status(500).json({ message: 'Erro ao buscar registro financeiro', error: error.message });
+    }
   }
 
   async update(req, res) {
-    const record = await FinanceService.updateFinanceRecord(req.params.id, req.body, req.tenantId);
-    if (!record) return res.status(404).json({ message: 'Registro não encontrado' });
-    res.json(record);
+    try {
+      const record = await FinanceService.updateFinanceRecord(req.params.id, req.body, req.tenantId);
+      if (!record) return res.status(404).json({ message: 'Registro não encontrado' });
+      res.json(record);
+    } catch (error) {
+      res.status(500).json({ message: 'Erro ao atualizar registro financeiro', error: error.message });
+    }
   }
 
   async delete(req, res) {
-    const success = await FinanceService.deleteFinanceRecord(req.params.id, req.tenantId);
-    if (!success) return res.status(404).json({ message: 'Registro não encontrado' });
-    res.status(204).send();
+    try {
+      const success = await FinanceService.deleteFinanceRecord(req.params.id, req.tenantId);
+      if (!success) return res.status(404).json({ message: 'Registro não encontrado' });
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: 'Erro ao excluir registro financeiro', error: error.message });
+    }
   }
 
   async getByPeriod(req, res) {
     const { startDate, endDate } = req.query;
-    const { tenantId } = req;
-  
     try {
-      const records = await FinanceService.getFinanceRecordsByPeriod(tenantId, startDate, endDate);
+      const records = await FinanceService.getFinanceRecordsByPeriod(req.tenantId, startDate, endDate);
       res.json(records);
     } catch (error) {
-      console.error('Erro ao buscar registros financeiros por período:', error);
-      res.status(500).json({ message: 'Erro ao buscar registros financeiros' });
+      res.status(500).json({ message: 'Erro ao buscar registros financeiros por período', error: error.message });
     }
   }
 
   async getSummaryByCategory(req, res) {
-    const { tenantId } = req;
-  
     try {
-      const summary = await FinanceService.getSummaryByCategory(tenantId);
+      const summary = await FinanceService.getSummaryByCategory(req.tenantId);
       res.json(summary);
     } catch (error) {
-      console.error('Erro ao buscar resumo por categoria:', error);
-      res.status(500).json({ message: 'Erro ao buscar resumo por categoria' });
+      res.status(500).json({ message: 'Erro ao buscar resumo por categoria', error: error.message });
     }
   }
 
   async getTotalBalance(req, res) {
-    const { tenantId } = req;
-  
     try {
-      const balance = await FinanceService.getTotalBalance(tenantId);
+      const balance = await FinanceService.getTotalBalance(req.tenantId);
       res.json({ balance });
     } catch (error) {
-      console.error('Erro ao calcular saldo total:', error);
-      res.status(500).json({ message: 'Erro ao calcular saldo total' });
+      res.status(500).json({ message: 'Erro ao calcular saldo total', error: error.message });
     }
   }
 }

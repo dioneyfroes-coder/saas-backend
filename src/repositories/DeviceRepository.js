@@ -12,24 +12,24 @@ class DeviceRepository {
   async findByIdentificador(identificador, tenantId) {
     return await Device.findOne({
       where: { identificador, tenantId },
-      include: [{ association: 'usuarioResponsavel' }]
+      include: [{ association: 'usuarioResponsavel' }],
     });
   }
 
-  async create(data, tenantId) {
-    return await Device.create({ ...data, tenantId });
+  async create(data) {
+    return await Device.create(data);
   }
 
   async update(id, data, tenantId) {
     const device = await this.findById(id, tenantId);
-    if (!device) return null;
+    if (!device) throw new Error('Dispositivo não encontrado');
     await device.update(data);
     return device;
   }
 
   async delete(id, tenantId) {
     const device = await this.findById(id, tenantId);
-    if (!device) return false;
+    if (!device) throw new Error('Dispositivo não encontrado');
     await device.destroy();
     return true;
   }

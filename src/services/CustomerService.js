@@ -1,21 +1,27 @@
-import Customer from '../models/Customer.js';
+import CustomerRepository from '../repositories/CustomerRepository';
 
-export const createCustomer = async (data) => {
-  return await Customer.create(data);
-};
+const CustomerService = {
+  async getCustomers(tenantId) {
+    return await CustomerRepository.findAll(tenantId);
+  },
 
-export const getCustomers = async (tenantId) => {
-  return await Customer.findAll({ where: { tenantId } });
-};
+  async getCustomerById(id, tenantId) {
+    const customer = await CustomerRepository.findById(id, tenantId);
+  if (!customer) throw new Error('Customer not found');
+  return customer;
+  },
 
-export const getCustomerById = async (id, tenantId) => {
-  return await Customer.findOne({ where: { id, tenantId } });
-};
+  async createCustomer(data) {
+    return await CustomerRepository.create(data);
+  },
 
-export const updateCustomer = async (id, tenantId, data) => {
-  return await Customer.update(data, { where: { id, tenantId } });
-};
+  async updateCustomer(id, tenantId, data) {
+    return await CustomerRepository.update(id, tenantId, data);
+  },
 
-export const deleteCustomer = async (id, tenantId) => {
-  return await Customer.destroy({ where: { id, tenantId } });
-};
+  async deleteCustomer(id, tenantId) {
+    return await CustomerRepository.delete(id, tenantId);
+  },
+}
+
+export default CustomerService;

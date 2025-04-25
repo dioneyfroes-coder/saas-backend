@@ -6,9 +6,9 @@ const router = Router();
 
 router.use(tenantMiddleware);
 
-router.post('/sales', SaleController.createSale);
-router.get('/sales', SaleController.getAllSales);
-router.get('/sales/:id', SaleController.getSaleById);
-router.post('/sales/:id/cancel', SaleController.cancelSale);
+router.post('/', SaleController.createSale);
+router.get('/', SaleController.getAllSales);
+router.get('/:id', SaleController.getSaleById);
+router.post('/:id/cancel', SaleController.cancelSale);
 
 export default router;

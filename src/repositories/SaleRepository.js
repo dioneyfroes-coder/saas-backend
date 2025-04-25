@@ -1,5 +1,5 @@
 import Sale from '../models/Sale.js';
-import SaleItem from '../models/SaleItem.js';
+import SaleItem from '../models/Sale_Item.js';
 import Product from '../models/Product.js';
 import sequelize from '../config/database.js';
 

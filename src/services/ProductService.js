@@ -1,37 +1,52 @@
 import ProductRepository from '../repositories/ProductRepository.js';
 
 class ProductService {
-  async getAllProducts() {
-    return await ProductRepository.findAll();
+  async getAllProducts(tenantId) {
+    return await ProductRepository.findAll(tenantId);
   }
 
-  async getProductById(id) {
-    return await ProductRepository.findById(id);
+  async getProductById(id, tenantId) {
+    return await ProductRepository.findById(id, tenantId);
   }
 
-  async createProduct(data) {
-    return await ProductRepository.create(data);
+  async createProduct(data, tenantId) {
+    return await ProductRepository.create({ ...data, tenantId });
   }
 
-  async updateProduct(id, data) {
-    return await ProductRepository.update(id, data);
+  async updateProduct(id, data, tenantId) {
+    const product = await ProductRepository.findById(id, tenantId);
+    if (!product) {
+      throw new Error('Produto não encontrado ou não pertence ao tenant');
+    }
+    return await product.update(data);
   }
 
-  async deleteProduct(id) {
-    return await ProductRepository.delete(id);
+  async deleteProduct(id, tenantId) {
+    const product = await ProductRepository.findById(id, tenantId);
+    if (!product) {
+      throw new Error('Produto não encontrado ou não pertence ao tenant');
+    }
+    return await product.destroy();
   }
 
-  // para codigo de barras
-async getProductByCodigoBarras(codigobarras) {
-    return await ProductRepository.findByCodigoBarras(codigobarras);
+  async getProductByCodigoBarras(codigoBarras, tenantId) {
+    return await ProductRepository.findByCodigoBarras(codigoBarras, tenantId);
   }
-  
-  async updateProductByCodigoBarras(codigobarras, data) {
-    return await ProductRepository.updateByCodigoBarras(codigobarras, data);
+
+  async updateProductByCodigoBarras(codigoBarras, data, tenantId) {
+    const product = await ProductRepository.findByCodigoBarras(codigoBarras, tenantId);
+    if (!product) {
+      throw new Error('Produto não encontrado pelo código de barras');
+    }
+    return await product.update(data);
   }
-  
-  async deleteProductByCodigoBarras(codigobarras) {
-    return await ProductRepository.deleteByCodigoBarras(codigobarras);
+
+  async deleteProductByCodigoBarras(codigoBarras, tenantId) {
+    const product = await ProductRepository.findByCodigoBarras(codigoBarras, tenantId);
+    if (!product) {
+      throw new Error('Produto não encontrado pelo código de barras');
+    }
+    return await product.destroy();
   }
 }
 

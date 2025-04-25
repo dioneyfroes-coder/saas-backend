@@ -1,13 +1,11 @@
-import FinanceRecord from '../models/FinanceRecord.js';
+import FinanceRecord from '../models/Finance_Record.js';
 import { Op, Sequelize } from 'sequelize';
 
 class FinanceRepository {
-  // Cria um registro financeiro
   async create(data) {
     return await FinanceRecord.create(data);
   }
 
-  // Busca todos os registros financeiros de um tenant
   async findAllByTenant(tenantId) {
     return await FinanceRecord.findAll({
       where: { tenantId },
@@ -15,33 +13,25 @@ class FinanceRepository {
     });
   }
 
-  // Busca um registro financeiro por ID e tenantId
   async findById(id, tenantId) {
     return await FinanceRecord.findOne({
       where: { id, tenantId },
     });
   }
 
-  // Atualiza um registro financeiro por ID e tenantId
   async update(id, tenantId, data) {
     const record = await this.findById(id, tenantId);
-    if (record) {
-      return await record.update(data);
-    }
-    return null;
+    if (!record) throw new Error('Registro financeiro não encontrado');
+    return await record.update(data);
   }
 
-  // Exclui um registro financeiro por ID e tenantId
   async delete(id, tenantId) {
     const record = await this.findById(id, tenantId);
-    if (record) {
-      await record.destroy();
-      return true;
-    }
-    return false;
+    if (!record) throw new Error('Registro financeiro não encontrado');
+    await record.destroy();
+    return true;
   }
 
-  // Busca registros financeiros por período (data inicial e final)
   async findByPeriod(tenantId, startDate, endDate) {
     return await FinanceRecord.findAll({
       where: {
@@ -54,7 +44,6 @@ class FinanceRepository {
     });
   }
 
-  // Resumo por categoria (agrupamento e soma dos valores)
   async getSummaryByCategory(tenantId) {
     return await FinanceRecord.findAll({
       where: { tenantId },
@@ -67,7 +56,6 @@ class FinanceRepository {
     });
   }
 
-  // Calcula o saldo total (entradas - saídas)
   async getTotalBalance(tenantId) {
     const result = await FinanceRecord.findAll({
       where: { tenantId },

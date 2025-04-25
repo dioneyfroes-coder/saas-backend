@@ -1,17 +1,15 @@
-// routes/financeRoutes.js
 import { Router } from 'express';
 import FinanceController from '../controllers/FinanceController.js';
-import financePermissionMiddleware from '../middlewares/financePermissionMiddleware.js';
 
 const router = Router();
 
-// Rotas protegidas por permissões
-router.post('/', financePermissionMiddleware, FinanceController.create);
-router.put('/:id', financePermissionMiddleware, FinanceController.update);
-router.delete('/:id', financePermissionMiddleware, FinanceController.delete);
-
-// Rotas públicas (apenas leitura)
+router.post('/', FinanceController.create);
 router.get('/', FinanceController.getAll);
 router.get('/:id', FinanceController.getById);
+router.put('/:id', FinanceController.update);
+router.delete('/:id', FinanceController.delete);
+router.get('/summary/category', FinanceController.getSummaryByCategory);
+router.get('/balance', FinanceController.getTotalBalance);
+router.get('/period', FinanceController.getByPeriod);
 
 export default router;
