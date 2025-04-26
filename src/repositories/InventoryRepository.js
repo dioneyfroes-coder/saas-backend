@@ -1,5 +1,5 @@
 // repositories/InventoryRepository.js
-import Inventory from '../models/Inventories.js';
+import Inventory from '../models/Inventory.js';
 
 class InventoryRepository {
   async findByProduct(productId, tenantId) {

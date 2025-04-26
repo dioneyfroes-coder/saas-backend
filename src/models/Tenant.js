@@ -5,7 +5,7 @@ import User from './User.js';
 import Customer from './Customer.js';
 import FinanceRecord from './Finance_Record.js';
 import Device from './Device.js';
-import Inventory from './Inventories.js';
+import Inventory from './Inventory.js';
 import InventoryMovement from './Inventory_Movement.js';
 
 const Tenant = sequelize.define('Tenant', {

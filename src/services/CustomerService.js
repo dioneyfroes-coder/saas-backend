@@ -1,4 +1,4 @@
-import CustomerRepository from '../repositories/CustomerRepository';
+import CustomerRepository from '../repositories/CustomerRepository.js';
 
 const CustomerService = {
   async getCustomers(tenantId) {

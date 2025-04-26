@@ -3,32 +3,37 @@
 import sequelize from '../config/database.js';
 import Tenant from './Tenant.js';
 import Sale from './Sale.js';
-import SaleItem from './SaleItem.js';
+import SaleItem from './Sale_Item.js';
 import Product from './Product.js';
 import Inventory from './Inventory.js';
-import InventoryMovement from './InventoryMovement.js';
+import InventoryMovement from './Inventory_Movement.js';
 import Device from './Device.js';
-import DeviceAccessLog from './DeviceAccessLog.js';
-import FinanceRecord from './FinanceRecord.js';
+import DeviceAccessLog from './Device_Access_Log.js';
+import FinanceRecord from './Finance_Record.js';
 import Customer from './Customer.js';
 import User from './User.js';
 
-const db = {};
-
 // Adiciona os modelos ao objeto db
-db.Tenant = Tenant;
-db.Sale = Sale;
-db.SaleItem = SaleItem;
-db.Product = Product;
-db.Inventory = Inventory;
-db.InventoryMovement = InventoryMovement;
-db.Device = Device;
-db.DeviceAccessLog = DeviceAccessLog;
-db.FinanceRecord = FinanceRecord;
-db.Customer = Customer;
-db.User = User;
+const db = {
+Tenant,
+Sale,
+SaleItem,
+Product,
+Inventory,
+InventoryMovement,
+Device,
+DeviceAccessLog,
+FinanceRecord,
+Customer,
+User,
+};
 
 // Configura associações entre os modelos
+Object.keys(db).forEach((modelName) => {
+    if (db[modelName].associate) {
+      db[modelName].associate(db);
+    }
+  });
 
 // Tenant
 Tenant.hasMany(Sale, { foreignKey: 'tenantId' });

@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import routes from './routes/index.js';
 import sequelize from './config/database.js';
-import index from './models/index.js'; // Importa todos os modelos para garantir que sejam registrados
+import db from './models/index.js'; // Importa e inicializa os modelos
 
 dotenv.config();
 
@@ -46,5 +46,12 @@ sequelize.authenticate()
     console.error('Erro ao conectar ao banco de dados:', err);
     process.exit(1);
   });
+
+if(db) {
+  console.log('Modelos carregados com sucesso:', Object.keys(db));
+}
+else {
+  console.error('Erro ao carregar os modelos.');
+};
   
 export default app;

@@ -1,6 +1,6 @@
 // services/InventoryService.js
 import InventoryRepository from '../repositories/InventoryRepository.js';
-import InventoryMovement from '../models/InventoryMovement.js';
+import InventoryMovement from '../models/Inventory_Movement.js';
 
 const InventoryService = {
   async getStockByProduct(productId, tenantId) {

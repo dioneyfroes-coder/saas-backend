@@ -9,8 +9,8 @@ import saleRoutes from './saleRoutes.js';
 import financeRoutes from './financeRoutes.js';
 import customerRoutes from './customerRoutes.js';
 import tenantRoutes from './tenantRoutes.js'; // ✅ Nova rota para o módulo de tenants
-import inventoryMovementsRoutes from './routes/inventoryMovimentsRoutes.js';
-import saleItemRoutes from './routes/saleItemRoutes.js';
+import inventoryMovementsRoutes from './inventoryMovimentsRoutes.js';
+import saleItemRoutes from './saleItemRoutes.js';
 
 const router = Router();
 
