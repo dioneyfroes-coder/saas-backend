@@ -12,3 +12,5 @@ Thumbs.db
 
 # folders
 seeders/
+generated/prisma
+dist

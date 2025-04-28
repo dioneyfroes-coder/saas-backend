@@ -1,0 +1,228 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model tenants {
+  id                 Int                   @id @default(autoincrement())
+  nome               String                @db.VarChar(255)
+  plano              String                @default("free") @db.VarChar(255)
+  status             String                @default("ativo") @db.VarChar(255)
+  createdAt          DateTime              @default(now()) @db.DateTime(0)
+  updatedAt          DateTime              @default(now()) @updatedAt @db.DateTime(0)
+  customers          customers[]
+  devices            devices[]
+  financeRecords     finance_records[]
+  inventories        inventories[]
+  inventoryMovements inventory_movements[]
+  products           products[]
+  saleItems          sale_items[]
+  sales              sales[]
+  users              users[]
+  deviceAccessLogs   device_access_logs[] // Relacionamento com device_access_logs
+}
+
+model products {
+  id           Int           @id @default(autoincrement())
+  codigobarras String        @unique(map: "codigobarras") @db.VarChar(255)
+  name         String        @db.VarChar(255)
+  quantity     Int
+  price        Float         @db.Float
+  tenantId     Int
+  inventories  inventories[]
+  tenant       tenants       @relation(fields: [tenantId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "products_ibfk_1")
+  saleItems    sale_items[]
+
+  @@index([tenantId], map: "tenantId")
+}
+
+model users {
+  id           Int        @id @default(autoincrement())
+  username     String     @unique(map: "username") @db.VarChar(255)
+  nomeCompleto String     @db.VarChar(255)
+  senha        String     @db.VarChar(255)
+  role         users_role
+  ativo        Boolean?   @default(true)
+  tenantId     Int
+  createdAt    DateTime   @default(now()) @db.DateTime(0)
+  updatedAt    DateTime   @default(now()) @db.DateTime(0)
+  devices      devices[]
+  sales        sales[]
+  tenant       tenants    @relation(fields: [tenantId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "users_ibfk_1")
+
+  @@index([tenantId], map: "tenantId")
+}
+
+model sales {
+  id             Int               @id @default(autoincrement())
+  tenantId       Int
+  userId         Int?
+  total          Decimal           @db.Decimal(10, 2)
+  status         sales_status?     @default(pendente)
+  createdAt      DateTime          @default(now()) @db.DateTime(0)
+  updatedAt      DateTime          @default(now()) @updatedAt @db.DateTime(0)
+  financeRecords finance_records[]
+  saleItems      sale_items[]
+  tenant         tenants           @relation(fields: [tenantId], references: [id], onDelete: Cascade, map: "sales_ibfk_1")
+  user           users?            @relation(fields: [userId], references: [id], map: "sales_ibfk_2")
+
+  @@index([tenantId], map: "tenantId")
+  @@index([userId], map: "userId")
+}
+
+model sale_items {
+  id        Int      @id @default(autoincrement())
+  saleId    Int
+  productId Int
+  tenantId  Int
+  quantity  Int
+  price     Decimal  @db.Decimal(10, 2)
+  sale      sales    @relation(fields: [saleId], references: [id], onDelete: Cascade, map: "sale_items_ibfk_1")
+  product   products @relation(fields: [productId], references: [id], onDelete: Cascade, map: "sale_items_ibfk_2")
+  tenant    tenants  @relation(fields: [tenantId], references: [id], onDelete: Cascade, map: "sale_items_ibfk_3")
+
+  @@index([productId], map: "productId")
+  @@index([saleId], map: "saleId")
+  @@index([tenantId], map: "tenantId")
+}
+
+model inventories {
+  id                 Int                   @id @default(autoincrement())
+  productId          Int
+  tenantId           Int
+  quantity           Int                   @default(0)
+  createdAt          DateTime              @default(now()) @db.DateTime(0)
+  updatedAt          DateTime              @default(now()) @updatedAt @db.DateTime(0)
+  product            products              @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "inventories_ibfk_1")
+  tenant             tenants               @relation(fields: [tenantId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "inventories_ibfk_2")
+  inventoryMovements inventory_movements[]
+
+  @@index([productId], map: "productId")
+  @@index([tenantId], map: "tenantId")
+}
+
+model inventory_movements {
+  id          Int                      @id @default(autoincrement())
+  inventoryId Int
+  tenantId    Int
+  type        inventory_movements_type
+  quantity    Int
+  description String?                  @db.VarChar(255)
+  createdAt   DateTime                 @default(now()) @db.DateTime(0)
+  updatedAt   DateTime                 @default(now()) @updatedAt @db.DateTime(0)
+  inventory   inventories              @relation(fields: [inventoryId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "inventory_movements_ibfk_1")
+  tenant      tenants                  @relation(fields: [tenantId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "inventory_movements_ibfk_2")
+
+  @@index([inventoryId], map: "inventoryId")
+  @@index([tenantId], map: "tenantId")
+}
+
+model customers {
+  id        Int      @id @default(autoincrement())
+  tenantId  Int
+  name      String   @db.VarChar(255)
+  document  String?  @db.VarChar(255)
+  email     String?  @db.VarChar(255)
+  phone     String?  @db.VarChar(255)
+  address   String?  @db.VarChar(255)
+  createdAt DateTime @default(now()) @db.DateTime(0)
+  updatedAt DateTime @default(now()) @updatedAt @db.DateTime(0)
+  tenant    tenants  @relation(fields: [tenantId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "customers_ibfk_1")
+
+  @@index([tenantId], map: "tenantId")
+}
+
+model devices {
+  id            Int                  @id @default(autoincrement())
+  nome          String               @db.VarChar(255)
+  tipo          DeviceType?          @default(outro)
+  identificador String               @unique(map: "identificador") @db.VarChar(255)
+  chaveSecreta  String?              @db.VarChar(255)
+  ativo         Boolean?             @default(true)
+  tenantId      Int
+  userId        Int?
+  createdAt     DateTime             @default(now()) @db.DateTime(0)
+  updatedAt     DateTime             @default(now()) @updatedAt @db.DateTime(0)
+  tenant        tenants              @relation(fields: [tenantId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "devices_ibfk_1")
+  user          users?               @relation(fields: [userId], references: [id], onUpdate: NoAction, map: "devices_ibfk_2")
+  deviceAccessLogs device_access_logs[] // Relacionamento com device_access_logs
+
+  @@index([tenantId], map: "tenantId")
+  @@index([userId], map: "userId")
+}
+
+model finance_records {
+  id          Int                      @id @default(autoincrement())
+  description String                   @db.VarChar(255)
+  type        FinanceType
+  value       Decimal                  @db.Decimal(10, 2)
+  date        DateTime                 @db.Date
+  tenantId    Int
+  category    finance_records_category
+  note        String?                  @db.Text
+  saleId      Int?
+  createdAt   DateTime                 @default(now()) @db.DateTime(0)
+  updatedAt   DateTime                 @default(now()) @updatedAt @db.DateTime(0)
+  tenant      tenants                  @relation(fields: [tenantId], references: [id], onDelete: Cascade, map: "finance_records_ibfk_1")
+  sale        sales?                   @relation(fields: [saleId], references: [id], map: "finance_records_ibfk_2")
+
+  @@index([saleId], map: "saleId")
+  @@index([tenantId], map: "tenantId")
+}
+
+model device_access_logs {
+  id          Int      @id @default(autoincrement())
+  deviceId    Int
+  tenantId    Int
+  accessedAt  DateTime @default(now())
+  ip          String?  @db.VarChar(255)
+  userAgent   String?  @db.VarChar(255)
+
+  device      devices   @relation(fields: [deviceId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "device_access_logs_ibfk_1")
+  tenant      tenants   @relation(fields: [tenantId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "device_access_logs_ibfk_2")
+
+  @@index([deviceId], map: "deviceId")
+  @@index([tenantId], map: "tenantId")
+}
+
+enum DeviceType {
+  estoque
+  pdv
+  admin
+  outro
+}
+
+enum FinanceType {
+  entrada
+  saida
+}
+
+enum inventory_movements_type {
+  entrada
+  saida
+  venda
+  ajuste
+}
+
+enum sales_status {
+  pendente
+  pago
+  cancelado
+}
+
+enum users_role {
+  admin
+  estoquista
+  caixa
+}
+
+enum finance_records_category {
+  Aluguel
+  Vendas
+  Marketing
+}
