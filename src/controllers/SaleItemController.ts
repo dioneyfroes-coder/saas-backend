@@ -5,10 +5,9 @@ class SaleItemController {
   // Buscar todos os itens de uma venda
   async getItemsBySale(req: Request, res: Response): Promise<void> {
     const { saleId } = req.params;
-    const { tenantId } = req;
 
     try {
-      const items = await SaleItemService.getItemsBySale(Number(saleId), tenantId!);
+      const items = await SaleItemService.getItemsBySale(Number(saleId));
       res.json(items);
     } catch (error) {
       console.error('Erro ao buscar itens da venda:', error);
@@ -18,8 +17,7 @@ class SaleItemController {
 
   // Criar um novo item de venda
   async createSaleItem(req: Request, res: Response): Promise<void> {
-    const { tenantId } = req;
-    const data = { ...req.body, tenantId };
+       const data = { ...req.body };
 
     try {
       const item = await SaleItemService.createSaleItem(data);
@@ -33,10 +31,9 @@ class SaleItemController {
   // Excluir todos os itens de uma venda
   async deleteItemsBySale(req: Request, res: Response): Promise<void> {
     const { saleId } = req.params;
-    const { tenantId } = req;
 
     try {
-      await SaleItemService.deleteItemsBySale(Number(saleId), tenantId!);
+      await SaleItemService.deleteItemsBySale(Number(saleId));
       res.status(204).send();
     } catch (error) {
       console.error('Erro ao excluir itens da venda:', error);

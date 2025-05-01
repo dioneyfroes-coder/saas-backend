@@ -1,11 +1,12 @@
+//// filepath: c:\Users\dioney\Documents\projeto\pdv\novo backend\src\routes\financeRoutes.ts
 import { Router } from 'express';
 import FinanceController from '../controllers/FinanceController';
-import { tenantMiddleware } from '../middlewares/tenantMiddleware';
+// import { tenantMiddleware } from '../middlewares/tenantMiddleware';
 
 const router = Router();
 
-// Middleware para adicionar tenantId
-router.use(tenantMiddleware);
+// Caso não haja mais tenant, remova este middleware completamente
+// router.use(tenantMiddleware);
 
 // Rotas de registros financeiros
 router.post('/', FinanceController.create);

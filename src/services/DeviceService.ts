@@ -1,64 +1,54 @@
+//// filepath: c:\Users\dioney\Documents\projeto\pdv\novo backend\src\services\DeviceService.ts
 import DeviceRepository from '../repositories/DeviceRepository';
 import DeviceAccessLogRepository from '../repositories/DeviceAccessLogRepository';
 import { DeviceType } from '../types/DevicesType';
 
 class DeviceService {
   // Autenticar dispositivo
-  async authenticateDevice(
-    identificador: string,
-    chaveSecreta: string | undefined,
-    ip: string,
-    tenantId: number
-  ): Promise<DeviceType | null> {
-    const device = await DeviceRepository.findByIdentificador(identificador, tenantId);
-
+  async authenticateDevice(identificador: string, chaveSecreta: string | undefined, ip: string): Promise<DeviceType | null> {
+    const device = await DeviceRepository.findByIdentificador(identificador);
     const sucesso = !!device && device.ativo && (!device.chaveSecreta || device.chaveSecreta === chaveSecreta);
 
     // Log de acesso
     await DeviceAccessLogRepository.create({
-      mensagem: sucesso ? 'Autenticado com sucesso' : 'Falha na autenticação',
-      deviceId: device ? device.id : null,
-      tenantId,
+      deviceId: device ? device.id : 0, // Default to 0 if device is null
+      // Se quiser vincular a employeesId, inclua aqui
       ip,
     });
 
     return sucesso ? device : null;
   }
 
-  // Buscar todos os dispositivos de um tenant
-  async getAllDevices(tenantId: number): Promise<DeviceType[]> {
-    return await DeviceRepository.findAll(tenantId);
+  // Buscar todos os dispositivos
+  async getAllDevices(): Promise<DeviceType[]> {
+    return await DeviceRepository.findAll();
   }
 
   // Buscar dispositivo por ID
-  async getDeviceById(id: number, tenantId: number): Promise<DeviceType | null> {
-    return await DeviceRepository.findById(id, tenantId);
+  async getDeviceById(id: number): Promise<DeviceType | null> {
+    return await DeviceRepository.findById(id);
   }
 
   // Criar um novo dispositivo
-  async createDevice(data: Omit<DeviceType, 'id' | 'createdAt' | 'updatedAt'>, tenantId: number): Promise<DeviceType> {
-    return await DeviceRepository.create({ ...data, tenantId });
+  async createDevice(data: Omit<DeviceType, 'id' | 'createdAt' | 'updatedAt'>): Promise<DeviceType> {
+    return await DeviceRepository.create(data);
   }
 
   // Atualizar um dispositivo
-  async updateDevice(
-    id: number,
-    data: Partial<Omit<DeviceType, 'id' | 'createdAt' | 'updatedAt'>>,
-    tenantId: number
-  ): Promise<DeviceType | null> {
-    return await DeviceRepository.update(id, tenantId, data);
+  async updateDevice(id: number, data: Partial<Omit<DeviceType, 'id' | 'createdAt' | 'updatedAt'>>): Promise<DeviceType | null> {
+    return await DeviceRepository.update(id, data);
   }
 
   // Excluir um dispositivo
-  async deleteDevice(id: number, tenantId: number): Promise<boolean> {
-    return await DeviceRepository.delete(id, tenantId);
+  async deleteDevice(id: number): Promise<boolean> {
+    return await DeviceRepository.delete(id);
   }
 
-  // Buscar logs de acesso de um dispositivo
-  async getAccessLogs(deviceId: number, tenantId: number): Promise<any[]> {
-    const limit = 10; // Example limit value
-    const offset = 0; // Example offset value
-    return await DeviceAccessLogRepository.findAllByDevice(deviceId, tenantId, limit, offset);
+  // Buscar logs de acesso de um dispositivo (exemplo)
+  async getAccessLogs(deviceId: number): Promise<any[]> {
+    const limit = 10; // Exemplo de limite
+    const offset = 0; // Exemplo de offset
+    return await DeviceAccessLogRepository.findAllByDevice(deviceId, limit, offset);
   }
 }
 

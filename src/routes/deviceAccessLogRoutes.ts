@@ -1,11 +1,8 @@
+//// filepath: c:\Users\dioney\Documents\projeto\pdv\novo backend\src\routes\deviceAccessLogRoutes.ts
 import { Router } from 'express';
-import DeviceAccessLogController from '../controllers/DeviceAccessLogController.js';
-import { tenantMiddleware } from '../middlewares/tenantMiddleware.js';
+import DeviceAccessLogController from '../controllers/DeviceAccessLogController';
 
 const router = Router();
-
-// Middleware para adicionar tenantId
-router.use(tenantMiddleware);
 
 // Buscar logs de acesso por dispositivo
 router.get('/:deviceId', DeviceAccessLogController.getLogsByDeviceId);

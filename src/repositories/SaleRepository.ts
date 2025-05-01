@@ -1,12 +1,15 @@
-import { PrismaClient } from "@prisma/client";
-import { SaleType } from "../types/SaleType";
+import { PrismaClient } from '@prisma/client';
+import { SaleType } from '../types/SaleType';
 
 const prisma = new PrismaClient();
 
 class SaleRepository {
   // Criar uma nova venda com itens
-  async create(saleData: Omit<SaleType, "id" | "createdAt" | "updatedAt">, items: Array<{ productId: number; quantity: number; price: number }>): Promise<SaleType> {
-    return await prisma.$transaction(async (transaction: { sales: { create: (arg0: { data: Omit<SaleType, "id" | "createdAt" | "updatedAt">; }) => any; }; sale_items: { createMany: (arg0: { data: { saleId: any; tenantId: any; productId: number; quantity: number; price: number; }[]; }) => any; }; }) => {
+  async create(
+    saleData: Omit<SaleType, 'id' | 'createdAt' | 'updatedAt'>,
+    items: Array<{ stockId: number; quantity: number; price: number }>
+  ): Promise<SaleType> {
+    return await prisma.$transaction(async (transaction: { sales: { create: (arg0: { data: Omit<SaleType, "id" | "createdAt" | "updatedAt">; }) => any; }; sale_items: { createMany: (arg0: { data: { saleId: any; stockId: number; quantity: number; price: number; }[]; }) => any; }; }) => {
       // Criar a venda
       const sale = await transaction.sales.create({
         data: saleData,
@@ -16,7 +19,6 @@ class SaleRepository {
       const saleItems = items.map((item) => ({
         ...item,
         saleId: sale.id,
-        tenantId: sale.tenantId,
       }));
 
       await transaction.sale_items.createMany({
@@ -27,29 +29,29 @@ class SaleRepository {
     });
   }
 
-  // Buscar todas as vendas de um tenant
-  async findAllByTenant(tenantId: number): Promise<SaleType[]> {
+  // Buscar todas as vendas de um funcionário
+  async findAllByEmployee(employeesId: number): Promise<SaleType[]> {
     return await prisma.sales.findMany({
-      where: { tenantId },
+      where: { employeesId },
       include: {
         saleItems: {
           include: {
-            product: true, // Inclui os dados do produto relacionado
+            stock: true, // Inclui os dados do item no estoque
           },
         },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
-  // Buscar uma venda por ID e tenant
-  async findById(id: number, tenantId: number): Promise<SaleType | null> {
+  // Buscar uma venda por ID e funcionário
+  async findById(id: number, employeesId: number): Promise<SaleType | null> {
     return await prisma.sales.findFirst({
-      where: { id, tenantId },
+      where: { id, employeesId },
       include: {
         saleItems: {
           include: {
-            product: true, // Inclui os dados do produto relacionado
+            stock: true, // Inclui os dados do item no estoque
           },
         },
       },
@@ -57,16 +59,16 @@ class SaleRepository {
   }
 
   // Cancelar uma venda
-  async cancel(id: number, tenantId: number): Promise<SaleType | null> {
+  async cancel(id: number, employeesId: number): Promise<SaleType | null> {
     const sale = await prisma.sales.findFirst({
-      where: { id, tenantId },
+      where: { id, employeesId },
     });
 
     if (!sale) return null;
 
     return await prisma.sales.update({
       where: { id },
-      data: { status: "cancelado" },
+      data: { status: 'cancelado' },
     });
   }
 }

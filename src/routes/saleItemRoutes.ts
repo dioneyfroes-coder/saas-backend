@@ -1,11 +1,7 @@
 import { Router } from 'express';
 import SaleItemController from '../controllers/SaleItemController';
-import { tenantMiddleware } from '../middlewares/tenantMiddleware';
 
 const router = Router();
-
-// Middleware para adicionar tenantId
-router.use(tenantMiddleware);
 
 // Rotas de itens de venda
 router.get('/:saleId', SaleItemController.getItemsBySale);

@@ -1,22 +1,19 @@
-import SaleRepository from '../repositories/SaleRepository.js';
-import { SaleType } from '../types/SaleType.js';
+import SaleRepository from '../repositories/SaleRepository';
+import { SaleType } from '../types/SaleType';
 
 const SaleService = {
   // Criar uma nova venda
   async createSale({
-    tenantId,
-    userId,
+    employeesId,
     items,
   }: {
-    tenantId: number;
-    userId?: number;
-    items: Array<{ productId: number; quantity: number; price: number }>;
+    employeesId: number;
+    items: Array<{ stockId: number; quantity: number; price: number }>;
   }): Promise<SaleType> {
     const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
     const saleData = {
-      tenantId,
-      userId,
+      employeesId,
       total,
       status: 'pago' as 'pago',
     };
@@ -24,19 +21,19 @@ const SaleService = {
     return await SaleRepository.create(saleData, items);
   },
 
-  // Buscar todas as vendas de um tenant
-  async getAllSales(tenantId: number): Promise<SaleType[]> {
-    return await SaleRepository.findAllByTenant(tenantId);
+  // Buscar todas as vendas de um funcionário
+  async getAllSales(employeesId: number): Promise<SaleType[]> {
+    return await SaleRepository.findAllByEmployee(employeesId);
   },
 
   // Buscar uma venda por ID
-  async getSaleById(id: number, tenantId: number): Promise<SaleType | null> {
-    return await SaleRepository.findById(id, tenantId);
+  async getSaleById(id: number, employeesId: number): Promise<SaleType | null> {
+    return await SaleRepository.findById(id, employeesId);
   },
 
   // Cancelar uma venda
-  async cancelSale(id: number, tenantId: number): Promise<SaleType | null> {
-    return await SaleRepository.cancel(id, tenantId);
+  async cancelSale(id: number, employeesId: number): Promise<SaleType | null> {
+    return await SaleRepository.cancel(id, employeesId);
   },
 };
 

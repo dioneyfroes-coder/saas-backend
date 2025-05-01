@@ -1,40 +1,32 @@
 {
   "dependencies": {
-    "@prisma/client": "^6.6.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
-    "mysql2": "^3.14.0",
-    "nodemon": "^3.1.9"
+    "mysql2": "^3.14.0"
   },
   "devDependencies": {
+    "@prisma/client": "^6.7.0",
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.15.2",
     "dotenv-cli": "^8.0.0",
-    "prisma": "^6.6.0",
+    "prisma": "^6.7.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.3"
   },
-  "sequelize": {
-    "config": "src/config/config.js",
-    "migrations-path": "src/migrations",
-    "seeders-path": "src/seeders",
-    "models-path": "src/models"
-  },
   "scripts": {
-    "db:migrate": "dotenv -e .env npx sequelize-cli db:migrate",
-    "db:seed": "dotenv -e .env npx sequelize-cli db:seed:all",
-    "db:undo": "dotenv -e .env npx sequelize-cli db:migrate:undo",
-    "migrate": "sequelize-cli db:migrate --config config/config.js",
-    "dev": "ts-node-dev --respawn src/server.ts",
+    "dev": "ts-node-dev --respawn --loader ts-node/esm src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "seed": "node prisma/seed.js"
   },
   "type": "module"
 }

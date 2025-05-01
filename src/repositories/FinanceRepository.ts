@@ -1,74 +1,79 @@
-import { PrismaClient } from "@prisma/client";
-import { FinanceRecordType } from "../types/FinanceRecordType";
+//// filepath: c:\Users\dioney\Documents\projeto\pdv\novo backend\src\repositories\FinanceRepository.ts
+import { PrismaClient } from '@prisma/client';
+import { FinanceType } from '../types/FinanceRecordType';
 
 const prisma = new PrismaClient();
 
 class FinanceRepository {
-  async create(data: Omit<FinanceRecordType, "id" | "createdAt" | "updatedAt">): Promise<FinanceRecordType> {
-    return await prisma.finance_records.create({
+  // Criar um registro financeiro
+  async create(data: Omit<FinanceType, 'id' | 'createdAt' | 'updatedAt'>): Promise<FinanceType> {
+    return await prisma.finance.create({
       data,
     });
   }
 
-  async findAllByTenant(tenantId: number): Promise<FinanceRecordType[]> {
-    return await prisma.finance_records.findMany({
-      where: { tenantId },
-      orderBy: { date: "desc" },
+  // Buscar todos os registros financeiros
+  async findAll(): Promise<FinanceType[]> {
+    return await prisma.finance.findMany({
+      orderBy: { date: 'desc' },
     });
   }
 
-  async findById(id: number, tenantId: number): Promise<FinanceRecordType | null> {
-    return await prisma.finance_records.findFirst({
-      where: { id, tenantId },
+  // Buscar um registro financeiro por ID
+  async findById(id: number): Promise<FinanceType | null> {
+    return await prisma.finance.findUnique({
+      where: { id },
     });
   }
 
+  // Atualizar um registro financeiro
   async update(
     id: number,
-    tenantId: number,
-    data: Partial<Omit<FinanceRecordType, "id" | "createdAt" | "updatedAt">>
-  ): Promise<FinanceRecordType | null> {
-    const record = await this.findById(id, tenantId);
-    if (!record) throw new Error("Registro financeiro não encontrado");
+    data: Partial<Omit<FinanceType, 'id' | 'createdAt' | 'updatedAt'>>
+  ): Promise<FinanceType | null> {
+    // Verifica se o registro existe
+    const record = await this.findById(id);
+    if (!record) throw new Error('Registro financeiro não encontrado');
 
-    return await prisma.finance_records.update({
+    return prisma.finance.update({
       where: { id },
       data,
     });
   }
 
-  async delete(id: number, tenantId: number): Promise<boolean> {
-    const record = await this.findById(id, tenantId);
-    if (!record) throw new Error("Registro financeiro não encontrado");
+  // Excluir um registro financeiro
+  async delete(id: number): Promise<boolean> {
+    const record = await this.findById(id);
+    if (!record) throw new Error('Registro financeiro não encontrado');
 
-    await prisma.finance_records.delete({
+    await prisma.finance.delete({
       where: { id },
     });
     return true;
   }
 
-  async findByPeriod(tenantId: number, startDate: Date, endDate: Date): Promise<FinanceRecordType[]> {
-    return await prisma.finance_records.findMany({
+  // Buscar registros financeiros por período
+  async findByPeriod(startDate: Date, endDate: Date): Promise<FinanceType[]> {
+    return prisma.finance.findMany({
       where: {
-        tenantId,
         date: {
           gte: startDate,
           lte: endDate,
         },
       },
-      orderBy: { date: "asc" },
+      orderBy: { date: 'asc' },
     });
   }
 
-  async getSummaryByCategory(tenantId: number): Promise<{ category: string; total: number }[]> {
-    const result = await prisma.finance_records.groupBy({
-      by: ["category"],
-      where: { tenantId },
+  // Agrupar registros por categoria
+  async getSummaryByCategory(): Promise<{ category: string; total: number }[]> {
+    const result = await prisma.finance.groupBy({
+      by: ['category'],
       _sum: {
         value: true,
       },
       orderBy: {
-        category: "asc",
+        category: 'asc',
       },
     });
 
@@ -78,33 +83,21 @@ class FinanceRepository {
     }));
   }
 
-  async getTotalBalance(tenantId: number): Promise<number> {
-    const result = await prisma.finance_records.aggregate({
-      where: { tenantId },
-      _sum: {
-        value: true,
-      },
+  // Obter saldo total, somando income e subtraindo expense
+  async getTotalBalance(): Promise<number> {
+    const incomes = await prisma.finance.aggregate({
+      where: { type: 'income' },
+      _sum: { value: true },
+    });
+    const expenses = await prisma.finance.aggregate({
+      where: { type: 'expense' },
+      _sum: { value: true },
     });
 
-    const entradas = await prisma.finance_records.aggregate({
-      where: { tenantId, type: "entrada" },
-      _sum: {
-        value: true,
-      },
-    });
-
-    const saidas = await prisma.finance_records.aggregate({
-      where: { tenantId, type: "saida" },
-      _sum: {
-        value: true,
-      },
-    });
-
-    const totalEntradas = entradas._sum.value || 0;
-    const totalSaidas = saidas._sum.value || 0;
-
-    return totalEntradas - totalSaidas;
+    const totalIncome = incomes._sum.value || 0;
+    const totalExpense = expenses._sum.value || 0;
+    return totalIncome - totalExpense;
   }
-};
+}
 
 export default new FinanceRepository();

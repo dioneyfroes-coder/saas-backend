@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
-import SaleService from '../services/SaleService.js';
+import SaleService from '../services/SaleService';
 
 class SaleController {
   // Criar uma nova venda
   async createSale(req: Request, res: Response): Promise<void> {
     try {
-      const { items, userId } = req.body;
-      const tenantId = req.tenantId;
+      const { items } = req.body;
+      const employeesId = req.employeesId;
 
-      const sale = await SaleService.createSale({ tenantId: tenantId!, userId, items });
+      const sale = await SaleService.createSale({ employeesId: employeesId!, items });
       res.status(201).json(sale);
     } catch (error) {
       console.error('Erro ao criar venda:', error);
@@ -19,8 +19,8 @@ class SaleController {
   // Buscar todas as vendas
   async getAllSales(req: Request, res: Response): Promise<void> {
     try {
-      const tenantId = req.tenantId;
-      const sales = await SaleService.getAllSales(tenantId!);
+      const employeesId = req.employeesId;
+      const sales = await SaleService.getAllSales(employeesId!);
       res.json(sales);
     } catch (error) {
       res.status(500).json({ message: 'Erro ao listar vendas' });
@@ -30,10 +30,10 @@ class SaleController {
   // Buscar uma venda por ID
   async getSaleById(req: Request, res: Response): Promise<void> {
     try {
-      const tenantId = req.tenantId;
+      const employeesId = req.employeesId;
       const id = Number(req.params.id);
 
-      const sale = await SaleService.getSaleById(id, tenantId!);
+      const sale = await SaleService.getSaleById(id, employeesId!);
       if (sale) {
         res.json(sale);
       } else {
@@ -47,10 +47,10 @@ class SaleController {
   // Cancelar uma venda
   async cancelSale(req: Request, res: Response): Promise<void> {
     try {
-      const tenantId = req.tenantId;
+      const employeesId = req.employeesId;
       const id = Number(req.params.id);
 
-      const sale = await SaleService.cancelSale(id, tenantId!);
+      const sale = await SaleService.cancelSale(id, employeesId!);
       if (sale) {
         res.json({ message: 'Venda cancelada com sucesso', sale });
       } else {

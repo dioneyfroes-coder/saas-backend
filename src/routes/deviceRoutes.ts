@@ -1,11 +1,8 @@
+//// filepath: c:\Users\dioney\Documents\projeto\pdv\novo backend\src\routes\deviceRoutes.ts
 import { Router } from 'express';
-import DeviceController from '../controllers/DeviceController.js';
-import { tenantMiddleware } from '../middlewares/tenantMiddleware.js';
+import DeviceController from '../controllers/DeviceController';
 
 const router = Router();
-
-// Middleware para adicionar tenantId
-router.use(tenantMiddleware);
 
 // Rotas de dispositivos
 router.get('/', DeviceController.getAll);

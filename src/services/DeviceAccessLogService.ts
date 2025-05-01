@@ -1,16 +1,16 @@
-import DeviceAccessLogRepository from '../repositories/DeviceAccessLogRepository.js';
+//// filepath: c:\Users\dioney\Documents\projeto\pdv\novo backend\src\services\DeviceAccessLogService.ts
+import DeviceAccessLogRepository from '../repositories/DeviceAccessLogRepository';
 import { DeviceAccessLogType } from '../types/DeviceAccessLogType';
 
 const DeviceAccessLogService = {
   // Buscar logs de acesso por dispositivo
   async getLogsByDevice(
     deviceId: number,
-    tenantId: number,
     page: number = 1,
     limit: number = 10
   ): Promise<DeviceAccessLogType[]> {
     const offset = (page - 1) * limit;
-    return await DeviceAccessLogRepository.findAllByDevice(deviceId, tenantId, limit, offset);
+    return await DeviceAccessLogRepository.findAllByDevice(deviceId, limit, offset);
   },
 
   // Criar um novo log de acesso

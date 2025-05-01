@@ -1,20 +1,23 @@
-import FinanceRepository from '../repositories/FinanceRepository.js';
-import { FinanceRecordType } from '../types/FinanceRecordType.js';
+//// filepath: c:\Users\dioney\Documents\projeto\pdv\novo backend\src\services\FinanceService.ts
+import FinanceRepository from '../repositories/FinanceRepository';
+import { FinanceType } from '../types/FinanceRecordType';
 
 export default {
-  // Criar um novo registro financeiro
-  async createFinanceRecord(data: Omit<FinanceRecordType, 'id' | 'createdAt' | 'updatedAt'>, tenantId: number): Promise<FinanceRecordType> {
-    return await FinanceRepository.create({ ...data, tenantId });
+  // Criar um registro financeiro
+  async createFinanceRecord(
+    data: Omit<FinanceType, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<FinanceType> {
+    return FinanceRepository.create(data);
   },
 
-  // Buscar todos os registros financeiros de um tenant
-  async getFinanceRecords(tenantId: number): Promise<FinanceRecordType[]> {
-    return await FinanceRepository.findAllByTenant(tenantId);
+  // Buscar todos os registros financeiros
+  async getFinanceRecords(): Promise<FinanceType[]> {
+    return FinanceRepository.findAll();
   },
 
   // Buscar um registro financeiro por ID
-  async getFinanceRecordById(id: number, tenantId: number): Promise<FinanceRecordType> {
-    const record = await FinanceRepository.findById(id, tenantId);
+  async getFinanceRecordById(id: number): Promise<FinanceType> {
+    const record = await FinanceRepository.findById(id);
     if (!record) throw new Error('Registro financeiro não encontrado');
     return record;
   },
@@ -22,29 +25,32 @@ export default {
   // Atualizar um registro financeiro
   async updateFinanceRecord(
     id: number,
-    data: Partial<Omit<FinanceRecordType, 'id' | 'createdAt' | 'updatedAt'>>,
-    tenantId: number
-  ): Promise<FinanceRecordType | null> {
-    return await FinanceRepository.update(id, tenantId, data);
+    data: Partial<Omit<FinanceType, 'id' | 'createdAt' | 'updatedAt'>>
+  ): Promise<FinanceType | null> {
+    return FinanceRepository.update(id, data);
   },
 
   // Excluir um registro financeiro
-  async deleteFinanceRecord(id: number, tenantId: number): Promise<boolean> {
-    return await FinanceRepository.delete(id, tenantId);
+  async deleteFinanceRecord(id: number): Promise<boolean> {
+    return FinanceRepository.delete(id);
   },
 
   // Buscar registros financeiros por período
-  async getFinanceRecordsByPeriod(tenantId: number, startDate: string, endDate: string): Promise<FinanceRecordType[]> {
-    return await FinanceRepository.findByPeriod(tenantId, new Date(startDate), new Date(endDate));
+  async getFinanceRecordsByPeriod(startDate: string, endDate: string): Promise<FinanceType[]> {
+    return FinanceRepository.findByPeriod(new Date(startDate), new Date(endDate));
   },
 
   // Obter resumo financeiro por categoria
-  async getSummaryByCategory(tenantId: number): Promise<{ category: string; total: number }[]> {
-    return await FinanceRepository.getSummaryByCategory(tenantId);
+  async getSummaryByCategory(): Promise<{ category: string; total: number }[]> {
+    return FinanceRepository.getSummaryByCategory();
   },
 
   // Obter saldo total
-  async getTotalBalance(tenantId: number): Promise<number> {
-    return await FinanceRepository.getTotalBalance(tenantId);
+  async getTotalBalance(): Promise<number> {
+    return FinanceRepository.getTotalBalance();
+  },
+
+  async getTotalBalanceByCategory(): Promise<{ category: string; total: number }[]> {
+    return FinanceRepository.getSummaryByCategory();
   },
 };

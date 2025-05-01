@@ -1,40 +1,47 @@
-import { PrismaClient } from "@prisma/client";
-import { DeviceType } from "../types/DevicesType";
+//// filepath: c:\Users\dioney\Documents\projeto\pdv\novo backend\src\repositories\DeviceRepository.ts
+import { PrismaClient } from '@prisma/client';
+import { DeviceType } from '../types/DevicesType';
 
 const prisma = new PrismaClient();
 
 class DeviceRepository {
-  async findAll(tenantId: number): Promise<DeviceType[]> {
+  // Buscar todos os dispositivos
+  async findAll(): Promise<DeviceType[]> {
     return await prisma.devices.findMany({
-      where: { tenantId },
+      // Se não houver critério de funcionário, apenas retorne todos
+      orderBy: { id: 'asc' },
     });
   }
 
-  async findById(id: number, tenantId: number): Promise<DeviceType | null> {
-    return await prisma.devices.findFirst({
-      where: { id, tenantId },
+  // Buscar dispositivo por ID
+  async findById(id: number): Promise<DeviceType | null> {
+    return await prisma.devices.findUnique({
+      where: { id },
     });
   }
 
-  async findByIdentificador(identificador: string, tenantId: number): Promise<DeviceType | null> {
-    return await prisma.devices.findFirst({
-      where: { identificador, tenantId },
+  // Buscar dispositivo por identificador
+  async findByIdentificador(identificador: string): Promise<DeviceType | null> {
+    return await prisma.devices.findUnique({
+      where: { identificador },
     });
   }
 
-  async create(data: Omit<DeviceType, "id" | "createdAt" | "updatedAt">): Promise<DeviceType> {
+  // Criar um novo dispositivo
+  async create(data: Omit<DeviceType, 'id' | 'createdAt' | 'updatedAt'>): Promise<DeviceType> {
     return await prisma.devices.create({
       data,
     });
   }
 
+  // Atualizar um dispositivo
   async update(
     id: number,
-    tenantId: number,
-    data: Partial<Omit<DeviceType, "id" | "createdAt" | "updatedAt">>
+    data: Partial<Omit<DeviceType, 'id' | 'createdAt' | 'updatedAt'>>
   ): Promise<DeviceType | null> {
-    const device = await this.findById(id, tenantId);
-    if (!device) throw new Error("Dispositivo não encontrado");
+    // Verifica se o dispositivo existe
+    const device = await this.findById(id);
+    if (!device) throw new Error('Dispositivo não encontrado');
 
     return await prisma.devices.update({
       where: { id },
@@ -42,9 +49,10 @@ class DeviceRepository {
     });
   }
 
-  async delete(id: number, tenantId: number): Promise<boolean> {
-    const device = await this.findById(id, tenantId);
-    if (!device) throw new Error("Dispositivo não encontrado");
+  // Excluir um dispositivo
+  async delete(id: number): Promise<boolean> {
+    const device = await this.findById(id);
+    if (!device) throw new Error('Dispositivo não encontrado');
 
     await prisma.devices.delete({
       where: { id },
