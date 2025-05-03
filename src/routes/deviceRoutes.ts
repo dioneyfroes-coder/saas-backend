@@ -1,6 +1,9 @@
 //// filepath: c:\Users\dioney\Documents\projeto\pdv\novo backend\src\routes\deviceRoutes.ts
 import { Router } from 'express';
 import DeviceController from '../controllers/DeviceController';
+// Importe o middleware e os schemas
+import { validateBody } from '../middlewares/validatorBody';
+import { createDeviceSchema, updateDeviceSchema } from '../validators/DeviceSchema';
 
 const router = Router();
 
@@ -8,8 +11,11 @@ const router = Router();
 router.get('/', DeviceController.getAll);
 router.get('/:id', DeviceController.getById);
 router.get('/logs/:id', DeviceController.getAccessLogs);
-router.post('/', DeviceController.create);
-router.put('/:id', DeviceController.update);
+
+// Rotas que exigem validação do corpo
+router.post('/', validateBody(createDeviceSchema), DeviceController.create);
+router.put('/:id', validateBody(updateDeviceSchema), DeviceController.update);
+
 router.delete('/:id', DeviceController.delete);
 
 // Autenticação de dispositivos

@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import routes from './routes/index';
+import { errorHandler } from './middlewares/errorHandler';
 
 dotenv.config();
 
@@ -22,16 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 // Rotas
 app.use('/api', routes);
 
-// Middleware para rotas não encontradas
-app.use((req: Request, res: Response) => {
-  res.status(404).json({ message: 'Rota não encontrada' });
-});
-
-// Middleware para tratamento de erros
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Erro interno do servidor' });
-});
+app.use(errorHandler); // Sempre depois das rotas
 
 // Função para iniciar o servidor
 const startServer = async () => {

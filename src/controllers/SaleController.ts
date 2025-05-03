@@ -1,63 +1,73 @@
+//// filepath: c:\Users\dioney\Documents\projeto\pdv\novo backend\src\controllers\SaleController.ts
 import { Request, Response } from 'express';
 import SaleService from '../services/SaleService';
+import {
+  NotFoundError,
+  InternalServerError,
+} from '../errors/AppError';
 
 class SaleController {
   // Criar uma nova venda
   async createSale(req: Request, res: Response): Promise<void> {
     try {
       const { items } = req.body;
-      const employeesId = req.employeesId;
+      const employeesId = (req as any).employeesId; // caso venha de middleware
 
-      const sale = await SaleService.createSale({ employeesId: employeesId!, items });
+      const sale = await SaleService.createSale({ employeesId, items });
       res.status(201).json(sale);
     } catch (error) {
-      console.error('Erro ao criar venda:', error);
-      res.status(500).json({ message: 'Erro ao criar venda' });
+      throw new InternalServerError(
+        error instanceof Error ? error.message : 'Erro ao criar venda'
+      );
     }
   }
 
   // Buscar todas as vendas
   async getAllSales(req: Request, res: Response): Promise<void> {
     try {
-      const employeesId = req.employeesId;
-      const sales = await SaleService.getAllSales(employeesId!);
+      const employeesId = (req as any).employeesId;
+      const sales = await SaleService.getAllSales(employeesId);
       res.json(sales);
     } catch (error) {
-      res.status(500).json({ message: 'Erro ao listar vendas' });
+      throw new InternalServerError(
+        error instanceof Error ? error.message : 'Erro ao listar vendas'
+      );
     }
   }
 
   // Buscar uma venda por ID
   async getSaleById(req: Request, res: Response): Promise<void> {
     try {
-      const employeesId = req.employeesId;
+      const employeesId = (req as any).employeesId;
       const id = Number(req.params.id);
 
-      const sale = await SaleService.getSaleById(id, employeesId!);
-      if (sale) {
-        res.json(sale);
-      } else {
-        res.status(404).json({ message: 'Venda não encontrada' });
+      const sale = await SaleService.getSaleById(id, employeesId);
+      if (!sale) {
+        throw new NotFoundError('Venda não encontrada');
       }
+      res.json(sale);
     } catch (error) {
-      res.status(500).json({ message: 'Erro ao buscar venda' });
+      throw new InternalServerError(
+        error instanceof Error ? error.message : 'Erro ao buscar venda'
+      );
     }
   }
 
   // Cancelar uma venda
   async cancelSale(req: Request, res: Response): Promise<void> {
     try {
-      const employeesId = req.employeesId;
+      const employeesId = (req as any).employeesId;
       const id = Number(req.params.id);
 
-      const sale = await SaleService.cancelSale(id, employeesId!);
-      if (sale) {
-        res.json({ message: 'Venda cancelada com sucesso', sale });
-      } else {
-        res.status(404).json({ message: 'Venda não encontrada' });
+      const sale = await SaleService.cancelSale(id, employeesId);
+      if (!sale) {
+        throw new NotFoundError('Venda não encontrada');
       }
+      res.json({ message: 'Venda cancelada com sucesso', sale });
     } catch (error) {
-      res.status(500).json({ message: 'Erro ao cancelar venda' });
+      throw new InternalServerError(
+        error instanceof Error ? error.message : 'Erro ao cancelar venda'
+      );
     }
   }
 }

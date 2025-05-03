@@ -111,6 +111,14 @@ model employees {
   devices   devices[] // Relacionamento com o modelo devices
 }
 
+model log {
+  id        Int      @id @default(autoincrement())
+  level     String
+  message   String
+  timestamp DateTime @default(now())
+  stack     String?
+}
+
 enum Role {
   manager       // Gerência
   hr            // RH

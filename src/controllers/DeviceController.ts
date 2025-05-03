@@ -1,6 +1,11 @@
 //// filepath: c:\Users\dioney\Documents\projeto\pdv\novo backend\src\controllers\DeviceController.ts
 import { Request, Response } from 'express';
 import DeviceService from '../services/DeviceService';
+import {
+  NotFoundError,
+  InternalServerError,
+  UnauthorizedError
+} from '../errors/AppError';
 
 class DeviceController {
   // Buscar todos os dispositivos
@@ -9,7 +14,9 @@ class DeviceController {
       const devices = await DeviceService.getAllDevices();
       res.json(devices);
     } catch (error) {
-      res.status(500).json({ message: 'Erro ao buscar dispositivos', error });
+      throw new InternalServerError(
+        error instanceof Error ? error.message : 'Erro ao buscar dispositivos'
+      );
     }
   }
 
@@ -17,10 +24,14 @@ class DeviceController {
   async getById(req: Request, res: Response): Promise<void> {
     try {
       const device = await DeviceService.getDeviceById(Number(req.params.id));
-      if (device) res.json(device);
-      else res.status(404).json({ message: 'Dispositivo não encontrado' });
+      if (!device) {
+        throw new NotFoundError('Dispositivo não encontrado');
+      }
+      res.json(device);
     } catch (error) {
-      res.status(500).json({ message: 'Erro ao buscar dispositivo', error });
+      throw new InternalServerError(
+        error instanceof Error ? error.message : 'Erro ao buscar dispositivo'
+      );
     }
   }
 
@@ -30,7 +41,9 @@ class DeviceController {
       const device = await DeviceService.createDevice(req.body);
       res.status(201).json(device);
     } catch (error) {
-      res.status(500).json({ message: 'Erro ao criar dispositivo', error });
+      throw new InternalServerError(
+        error instanceof Error ? error.message : 'Erro ao criar dispositivo'
+      );
     }
   }
 
@@ -38,10 +51,14 @@ class DeviceController {
   async update(req: Request, res: Response): Promise<void> {
     try {
       const device = await DeviceService.updateDevice(Number(req.params.id), req.body);
-      if (device) res.json(device);
-      else res.status(404).json({ message: 'Dispositivo não encontrado' });
+      if (!device) {
+        throw new NotFoundError('Dispositivo não encontrado');
+      }
+      res.json(device);
     } catch (error) {
-      res.status(500).json({ message: 'Erro ao atualizar dispositivo', error });
+      throw new InternalServerError(
+        error instanceof Error ? error.message : 'Erro ao atualizar dispositivo'
+      );
     }
   }
 
@@ -49,10 +66,14 @@ class DeviceController {
   async delete(req: Request, res: Response): Promise<void> {
     try {
       const success = await DeviceService.deleteDevice(Number(req.params.id));
-      if (success) res.status(204).send();
-      else res.status(404).json({ message: 'Dispositivo não encontrado' });
+      if (!success) {
+        throw new NotFoundError('Dispositivo não encontrado');
+      }
+      res.status(204).send();
     } catch (error) {
-      res.status(500).json({ message: 'Erro ao excluir dispositivo', error });
+      throw new InternalServerError(
+        error instanceof Error ? error.message : 'Erro ao excluir dispositivo'
+      );
     }
   }
 
@@ -60,14 +81,17 @@ class DeviceController {
   async authenticate(req: Request, res: Response): Promise<void> {
     try {
       const { identificador, chaveSecreta } = req.body;
-      // Ip pode vir de req.ip ou cabeçalho
       const ip = req.ip || req.headers['x-forwarded-for'];
-
       const device = await DeviceService.authenticateDevice(identificador, chaveSecreta, ip as string);
-      if (device) res.json(device);
-      else res.status(401).json({ message: 'Dispositivo não autorizado ou inativo' });
+
+      if (!device) {
+        throw new UnauthorizedError('Dispositivo não autorizado ou inativo');
+      }
+      res.json(device);
     } catch (error) {
-      res.status(500).json({ message: 'Erro ao autenticar dispositivo', error });
+      throw new InternalServerError(
+        error instanceof Error ? error.message : 'Erro ao autenticar dispositivo'
+      );
     }
   }
 
@@ -77,7 +101,9 @@ class DeviceController {
       const logs = await DeviceService.getAccessLogs(Number(req.params.id));
       res.json(logs);
     } catch (error) {
-      res.status(500).json({ message: 'Erro ao buscar logs de acesso', error });
+      throw new InternalServerError(
+        error instanceof Error ? error.message : 'Erro ao buscar logs de acesso'
+      );
     }
   }
 }

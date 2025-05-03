@@ -1,3 +1,4 @@
+/*
 import { Request, Response, NextFunction } from 'express';
 
 // Extend the Request interface to include employeesId
@@ -27,3 +28,4 @@ export const employeeMiddleware = (req: Request, res: Response, next: NextFuncti
     res.status(500).json({ message: 'Erro ao processar autenticação do funcionário' });
   }
 };
+*/
