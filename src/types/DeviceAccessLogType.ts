@@ -5,5 +5,4 @@ export interface DeviceAccessLogType {
   accessedAt: Date;
   ip?: string;
   userAgent?: string;
-  // Removido tenantId e mensagem, pois não existem no schema device_access_logs
 }

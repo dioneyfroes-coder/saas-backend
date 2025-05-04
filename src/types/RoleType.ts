@@ -2,9 +2,14 @@
 // Cria uma tipagem em TypeScript compatível com o enum "Role" do schema Prisma
 
 export type RoleType =
-  | 'manager'
-  | 'hr'
-  | 'finance'
-  | 'supervisor'
-  | 'auditor'
-  | 'operator';
+  | "admin"
+  | "super_admin"
+  | "manager"
+  | "hr"
+  | "finance"
+  | "supervisor"
+  | "auditor"
+  | "stock_clerk"
+  | "cashier"
+  | "operator"
+  | "it";

@@ -2,7 +2,6 @@ import { Request } from 'express';
 
 export interface TokenPayload {
   userId: number;
-  tenantId: number;
   [key: string]: any; // Para propriedades adicionais
 }
 

@@ -5,16 +5,13 @@ import {
   NotFoundError,
   InternalServerError
 } from '../errors/AppError';
-
-interface CustomRequest extends Request {
-  tenantId: number;
-}
+import { RegisterEmployeeDTO } from '../types/RegisterEmployeeDTOType';
 
 class EmployeesController {
-  async create(req: CustomRequest, res: Response): Promise<void> {
+  async create(req: Request, res: Response): Promise<void> {
     try {
-      const data = { ...req.body, tenantId: req.tenantId };
-      const employee = await EmployeesService.createEmployee(data);
+      const body = req.body as RegisterEmployeeDTO;
+      const employee = await EmployeesService.createEmployee(body);
       res.status(201).json(employee);
     } catch (err) {
       throw new InternalServerError(
@@ -23,9 +20,9 @@ class EmployeesController {
     }
   }
 
-  async list(req: CustomRequest, res: Response): Promise<void> {
+  async list(req: Request, res: Response): Promise<void> {
     try {
-      const employees = await EmployeesService.getEmployees(req.tenantId);
+      const employees = await EmployeesService.getEmployees();
       res.json(employees);
     } catch (err) {
       throw new InternalServerError(
@@ -34,9 +31,9 @@ class EmployeesController {
     }
   }
 
-  async getById(req: CustomRequest, res: Response): Promise<void> {
+  async getById(req: Request, res: Response): Promise<void> {
     try {
-      const employee = await EmployeesService.getEmployeeById(Number(req.params.id), req.tenantId);
+      const employee = await EmployeesService.getEmployeeById(Number(req.params.id));
       if (!employee) {
         throw new NotFoundError('Funcionário não encontrado.');
       }
@@ -48,9 +45,9 @@ class EmployeesController {
     }
   }
 
-  async update(req: CustomRequest, res: Response): Promise<void> {
+  async update(req: Request, res: Response): Promise<void> {
     try {
-      const employee = await EmployeesService.updateEmployee(Number(req.params.id), req.tenantId, req.body);
+      const employee = await EmployeesService.updateEmployee(Number(req.params.id), req.body);
       if (!employee) {
         throw new NotFoundError('Funcionário não encontrado.');
       }
@@ -62,9 +59,9 @@ class EmployeesController {
     }
   }
 
-  async remove(req: CustomRequest, res: Response): Promise<void> {
+  async remove(req: Request, res: Response): Promise<void> {
     try {
-      await EmployeesService.deleteEmployee(Number(req.params.id), req.tenantId);
+      await EmployeesService.deleteEmployee(Number(req.params.id));
       res.status(204).send();
     } catch (err) {
       throw new InternalServerError(

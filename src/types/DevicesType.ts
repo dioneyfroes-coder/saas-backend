@@ -6,7 +6,7 @@ export interface DeviceType {
   identificador: string;
   chaveSecreta?: string;
   ativo: boolean;
-  employeesId?: number; // Substitui tenantId e userId
+  employeesId?: number; 
   createdAt: Date;
   updatedAt: Date;
 }

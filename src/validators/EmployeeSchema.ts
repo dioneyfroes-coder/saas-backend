@@ -3,7 +3,6 @@ import Joi from 'joi';
 
 // Schema para criar um novo funcionário
 export const createEmployeeSchema = Joi.object({
-  tenantId: Joi.number().required(),
   name: Joi.string().required(),
   document: Joi.string().optional(),
   email: Joi.string().email().optional(),
@@ -13,7 +12,6 @@ export const createEmployeeSchema = Joi.object({
 
 // Schema para atualizar dados de um funcionário
 export const updateEmployeeSchema = Joi.object({
-  tenantId: Joi.number().optional(),
   name: Joi.string().optional(),
   document: Joi.string().optional(),
   email: Joi.string().email().optional(),
