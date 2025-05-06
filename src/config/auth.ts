@@ -7,6 +7,6 @@ if (!process.env.JWT_SECRET || !process.env.JWT_EXPIRES_IN) {
 
 export const JWT_CONFIG = {
   secret: process.env.JWT_SECRET || '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
-  expiresIn: process.env.JWT_EXPIRES_IN || '1d',
+  expiresIn: process.env.JWT_EXPIRES_IN || '36000',
   algorithm: 'HS256' as const, // Tipo literal
 };
