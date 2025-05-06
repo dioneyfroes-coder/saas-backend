@@ -1,16 +1,17 @@
 {
     "compilerOptions": {
-      "target": "ES2015",                   
-      "module": "ESNext",                 
+      "target": "ES2020",                   
+      "module": "CommonJS",                 
       "rootDir": "./src",                   
       "outDir": "./dist",                   
-      "strict": true,                       
-      "esModuleInterop": true,              
+      "strict": false,                       
+      "esModuleInterop": true,  
+      "allowSyntheticDefaultImports": true,            
       "forceConsistentCasingInFileNames": true,
       "skipLibCheck": false,
-      "moduleResolution": "node",
       "resolveJsonModule": true,
-      "types": ["node", "express", "jsonwebtoken"]
+      "moduleResolution": "Node",             
+      "types": ["node", "express", "jsonwebtoken", "joi"]  
     },
     "include": ["./src/**/*"],
     "exclude": ["node_modules"]

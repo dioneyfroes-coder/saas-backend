@@ -1,15 +1,15 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
+import prisma from './prisma';
 import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
-import { PrismaClient } from '@prisma/client';
+
 import routes from './routes/index';
 import { errorHandler } from './middlewares/errorHandler';
 
-dotenv.config();
-
-const prisma = new PrismaClient(); // Instância do Prisma Client
 const app: Application = express(); // Instância do Express
 const PORT = process.env.PORT || 3000;
 
