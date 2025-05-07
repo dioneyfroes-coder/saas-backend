@@ -6,38 +6,66 @@ const prisma = new PrismaClient();
 class StockRepository {
   // Buscar todos os itens no estoque
   async findAll(): Promise<StockType[]> {
-    return await prisma.stock.findMany({
+    const stocks = await prisma.stock.findMany({
       orderBy: { name: 'asc' },
     });
+    return stocks.map(stock => ({
+      ...stock,
+      price: stock.price.toNumber(),
+    }));
   }
 
   // Buscar um item por ID
   async findById(id: number): Promise<StockType | null> {
-    return await prisma.stock.findUnique({
+    const stock = await prisma.stock.findUnique({
       where: { id },
     });
+
+    if (!stock) return null;
+
+    return {
+      ...stock,
+      price: stock.price.toNumber(),
+    };
   }
 
   // Buscar um item por código de barras
   async findByBarcode(barcode: string): Promise<StockType | null> {
-    return await prisma.stock.findUnique({
+    const stock = await prisma.stock.findUnique({
       where: { barcode },
     });
+
+    if (!stock) return null;
+
+    return {
+      ...stock,
+      price: stock.price.toNumber(),
+    };
   }
 
   // Criar um novo item no estoque
   async create(data: Omit<StockType, 'id' | 'createdAt' | 'updatedAt'>): Promise<StockType> {
-    return await prisma.stock.create({
+    const createdStock = await prisma.stock.create({
       data,
     });
+
+    return {
+      ...createdStock,
+      price: createdStock.price.toNumber(),
+    };
   }
 
   // Atualizar um item no estoque
   async update(id: number, data: Partial<Omit<StockType, 'id' | 'createdAt' | 'updatedAt'>>): Promise<StockType | null> {
-    return await prisma.stock.update({
+    const updatedStock = await prisma.stock.update({
       where: { id },
       data,
     });
+
+    return {
+      ...updatedStock,
+      price: updatedStock.price.toNumber(),
+    };
   }
 
   // Excluir um item do estoque

@@ -1,5 +1,5 @@
 //// filepath: c:\Users\dioney\Documents\projeto\pdv\novo backend\src\repositories\EmployeesRepository.ts
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Role } from '@prisma/client';
 import { EmployeeType } from '../types/EmployeeType';
 
 const prisma = new PrismaClient();
@@ -20,9 +20,12 @@ class EmployeesRepository {
   }
 
   // Criar um novo funcionário
-  async create(data: Omit<EmployeeType, 'id' | 'createdAt' | 'updatedAt'>): Promise<EmployeeType> {
+  async create(data: Omit<EmployeeType, 'id' | 'createdAt' | 'updatedAt'> & { role: string }): Promise<EmployeeType> {
     return prisma.employees.create({
-      data,
+      data: {
+        ...data,
+        role: data.role as Role, // Cast 'role' to the Prisma enum
+      },
     });
   }
 

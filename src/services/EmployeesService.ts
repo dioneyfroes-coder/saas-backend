@@ -1,5 +1,5 @@
 //// filepath: c:\Users\dioney\Documents\projeto\pdv\novo backend\src\services\EmployeesService.ts
-import EmployeesRepository from '../repositories/EmployeesRepository.js';
+import EmployeesRepository from '../repositories/EmployeesRepository';
 import { EmployeeType } from '../types/EmployeeType';
 import bcrypt from 'bcrypt';
 import { RegisterEmployeeDTO } from '../types/RegisterEmployeeDTOType';

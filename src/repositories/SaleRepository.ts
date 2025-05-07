@@ -31,7 +31,7 @@ class SaleRepository {
 
   // Buscar todas as vendas de um funcionário
   async findAllByEmployee(employeesId: number): Promise<SaleType[]> {
-    return await prisma.sales.findMany({
+    const sales = await prisma.sales.findMany({
       where: { employeesId },
       include: {
         saleItems: {
@@ -42,11 +42,16 @@ class SaleRepository {
       },
       orderBy: { createdAt: 'desc' },
     });
+
+    return sales.map((sale) => ({
+      ...sale,
+      total: sale.total.toNumber(), // Convert Decimal to number
+    }));
   }
 
   // Buscar uma venda por ID e funcionário
   async findById(id: number, employeesId: number): Promise<SaleType | null> {
-    return await prisma.sales.findFirst({
+    const sale = await prisma.sales.findFirst({
       where: { id, employeesId },
       include: {
         saleItems: {
@@ -56,6 +61,13 @@ class SaleRepository {
         },
       },
     });
+
+    if (!sale) return null;
+
+    return {
+      ...sale,
+      total: sale.total.toNumber(), // Convert Decimal to number
+    };
   }
 
   // Cancelar uma venda
@@ -66,10 +78,15 @@ class SaleRepository {
 
     if (!sale) return null;
 
-    return await prisma.sales.update({
+    const updatedSale = await prisma.sales.update({
       where: { id },
       data: { status: 'cancelado' },
     });
+
+    return {
+      ...updatedSale,
+      total: updatedSale.total.toNumber(), // Convert Decimal to number
+    };
   }
 }
 

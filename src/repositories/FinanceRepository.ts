@@ -7,23 +7,39 @@ const prisma = new PrismaClient();
 class FinanceRepository {
   // Criar um registro financeiro
   async create(data: Omit<FinanceType, 'id' | 'createdAt' | 'updatedAt'>): Promise<FinanceType> {
-    return await prisma.finance.create({
+    const createdRecord = await prisma.finance.create({
       data,
     });
+    return {
+      ...createdRecord,
+      value: createdRecord.value.toNumber(),
+    };
   }
 
   // Buscar todos os registros financeiros
   async findAll(): Promise<FinanceType[]> {
-    return await prisma.finance.findMany({
+    const records = await prisma.finance.findMany({
       orderBy: { date: 'desc' },
     });
+
+    return records.map(record => ({
+      ...record,
+      value: record.value.toNumber(),
+    }));
   }
 
   // Buscar um registro financeiro por ID
   async findById(id: number): Promise<FinanceType | null> {
-    return await prisma.finance.findUnique({
+    const record = await prisma.finance.findUnique({
       where: { id },
     });
+
+    if (!record) return null;
+
+    return {
+      ...record,
+      value: record.value.toNumber(),
+    };
   }
 
   // Atualizar um registro financeiro
@@ -35,10 +51,15 @@ class FinanceRepository {
     const record = await this.findById(id);
     if (!record) throw new Error('Registro financeiro não encontrado');
 
-    return prisma.finance.update({
+    const updatedRecord = await prisma.finance.update({
       where: { id },
       data,
     });
+
+    return {
+      ...updatedRecord,
+      value: updatedRecord.value.toNumber(),
+    };
   }
 
   // Excluir um registro financeiro
@@ -54,7 +75,7 @@ class FinanceRepository {
 
   // Buscar registros financeiros por período
   async findByPeriod(startDate: Date, endDate: Date): Promise<FinanceType[]> {
-    return prisma.finance.findMany({
+    const records = await prisma.finance.findMany({
       where: {
         date: {
           gte: startDate,
@@ -63,6 +84,11 @@ class FinanceRepository {
       },
       orderBy: { date: 'asc' },
     });
+
+    return records.map(record => ({
+      ...record,
+      value: record.value.toNumber(),
+    }));
   }
 
   // Agrupar registros por categoria
@@ -94,8 +120,8 @@ class FinanceRepository {
       _sum: { value: true },
     });
 
-    const totalIncome = incomes._sum.value || 0;
-    const totalExpense = expenses._sum.value || 0;
+    const totalIncome = Number(incomes._sum.value) || 0;
+    const totalExpense = Number(expenses._sum.value) || 0;
     return totalIncome - totalExpense;
   }
 }
