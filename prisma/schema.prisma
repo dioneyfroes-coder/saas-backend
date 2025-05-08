@@ -1,7 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["interactiveTransactions"]
-  output   = "../node_modules/.prisma/client"
+  output          = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -103,7 +103,7 @@ model employees {
   id           Int      @id @default(autoincrement())
   name         String
   role         Role
-  email        String?
+  email        String   @unique @db.VarChar(255)
   phone        String?
   address      String?
   passwordHash String?
@@ -165,6 +165,7 @@ enum DeviceType {
   estoque
   pdv
   admin
+  super_admin
   financeiro
   rh
   totem

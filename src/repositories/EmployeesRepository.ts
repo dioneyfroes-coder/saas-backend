@@ -24,6 +24,7 @@ class EmployeesRepository {
     return prisma.employees.create({
       data: {
         ...data,
+        email: data.email ?? '', // Ensure email is provided with a default value
         role: data.role as Role, // Cast 'role' to the Prisma enum
       },
     });

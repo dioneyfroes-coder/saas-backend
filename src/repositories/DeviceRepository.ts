@@ -7,10 +7,15 @@ const prisma = new PrismaClient();
 class DeviceRepository {
   // Buscar todos os dispositivos
   async findAll(): Promise<DeviceType[]> {
-    return await prisma.devices.findMany({
+    const devices = await prisma.devices.findMany({
       // Se não houver critério de funcionário, apenas retorne todos
       orderBy: { id: 'asc' },
     });
+
+    return devices.map(device => ({
+      ...device,
+      tipo: device.tipo as DeviceType['tipo'], // Ensure 'tipo' matches the expected type
+    }));
   }
 
   // Buscar dispositivo por ID
