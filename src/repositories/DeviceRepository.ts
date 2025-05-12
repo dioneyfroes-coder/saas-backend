@@ -8,13 +8,12 @@ class DeviceRepository {
   // Buscar todos os dispositivos
   async findAll(): Promise<DeviceType[]> {
     const devices = await prisma.devices.findMany({
-      // Se não houver critério de funcionário, apenas retorne todos
       orderBy: { id: 'asc' },
     });
 
     return devices.map(device => ({
       ...device,
-      tipo: device.tipo as DeviceType['tipo'], // Ensure 'tipo' matches the expected type
+      tipo: device.tipo as DeviceType['tipo'],
     }));
   }
 
@@ -44,13 +43,20 @@ class DeviceRepository {
     id: number,
     data: Partial<Omit<DeviceType, 'id' | 'createdAt' | 'updatedAt'>>
   ): Promise<DeviceType | null> {
-    // Verifica se o dispositivo existe
     const device = await this.findById(id);
     if (!device) throw new Error('Dispositivo não encontrado');
 
     return await prisma.devices.update({
       where: { id },
       data,
+    });
+  }
+
+  // Atualizar o token de um dispositivo
+  async updateToken(identificador: string, token: string): Promise<DeviceType | null> {
+    return await prisma.devices.update({
+      where: { identificador },
+      data: { token },
     });
   }
 

@@ -6,7 +6,8 @@ export interface DeviceType {
   identificador: string;
   chaveSecreta?: string;
   ativo: boolean;
-  employeesId?: number; 
+  employeesId?: number;
+  token?: string;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -162,5 +162,6 @@ router.get('/logs/:id', DeviceController.getAccessLogs);
  *         description: Dispositivo autenticado com sucesso
  */
 router.post('/authenticate', DeviceController.authenticate);
+router.post('/token', DeviceController.updateToken);
 
 export default router;

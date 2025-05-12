@@ -3,6 +3,7 @@ import { Router } from 'express';
 import DeviceAccessLogController from '../controllers/DeviceAccessLogController';
 import { validateBody } from '../middlewares/validatorBody';
 import { createDeviceAccessLogSchema } from '../validators/DeviceAccessLogSchema';
+import { authMiddleware } from '../middlewares/authMiddleware';
 
 const router = Router();
 
@@ -23,7 +24,7 @@ const router = Router();
  *       200:
  *         description: Lista de logs de acesso do dispositivo
  */
-router.get('/:deviceId', DeviceAccessLogController.getLogsByDeviceId);
+router.get('/:deviceId', authMiddleware, DeviceAccessLogController.getLogsByDeviceId);
 
 /**
  * @swagger

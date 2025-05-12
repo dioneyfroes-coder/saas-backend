@@ -1,7 +1,7 @@
 import { Request } from 'express';
 
 export interface TokenPayload {
-  userId: number;
+  employeesId: number;
   [key: string]: any; // Para propriedades adicionais
 }
 

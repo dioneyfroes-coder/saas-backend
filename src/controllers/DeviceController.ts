@@ -6,6 +6,10 @@ import {
   InternalServerError,
   UnauthorizedError
 } from '../errors/AppError';
+import DeviceRepository from '../repositories/DeviceRepository';
+import DeviceAccessLogRepository from '../repositories/DeviceAccessLogRepository';
+import { DeviceType } from '../types/DevicesType';
+import { AuthService } from '../services/AuthService';
 
 class DeviceController {
   // Buscar todos os dispositivos
@@ -39,6 +43,13 @@ class DeviceController {
   async create(req: Request, res: Response): Promise<void> {
     try {
       const device = await DeviceService.createDevice(req.body);
+
+      // Registrar log de criação
+    await DeviceAccessLogRepository.create({
+      deviceId: device.id,
+      ip: req.ip,
+      userAgent: req.headers['user-agent'] || 'unknown',
+    });
       res.status(201).json(device);
     } catch (error) {
       throw new InternalServerError(
@@ -54,6 +65,13 @@ class DeviceController {
       if (!device) {
         throw new NotFoundError('Dispositivo não encontrado');
       }
+
+      // Registrar log de alteração
+    await DeviceAccessLogRepository.create({
+      deviceId: device.id,
+      ip: req.ip,
+      userAgent: req.headers['user-agent'] || 'unknown',
+    });
       res.json(device);
     } catch (error) {
       throw new InternalServerError(
@@ -78,20 +96,37 @@ class DeviceController {
   }
 
   // Autenticar dispositivo
-  async authenticate(req: Request, res: Response): Promise<void> {
+async authenticate(req: Request, res: Response): Promise<void> {
     try {
       const { identificador, chaveSecreta } = req.body;
-      const ip = req.ip || req.headers['x-forwarded-for'];
-      const device = await DeviceService.authenticateDevice(identificador, chaveSecreta, ip as string);
 
-      if (!device) {
-        throw new UnauthorizedError('Dispositivo não autorizado ou inativo');
+      if (!identificador || !chaveSecreta) {
+        res.status(400).json({ message: 'Identificador e chaveSecreta são obrigatórios.' });
+        return;
       }
-      res.json(device);
+
+      // Verifica se o dispositivo existe
+      const device = await DeviceRepository.findByIdentificador(identificador);
+      if (!device || device.chaveSecreta !== chaveSecreta) {
+        res.status(401).json({ message: 'Dispositivo não autorizado.' });
+        return;
+      }
+
+      // Gera o token para o dispositivo
+      const token = AuthService.generateToken({
+        deviceId: device.id,
+        role: device.tipo,
+        employeesId: device.employeesId
+      });
+
+      // Atualiza o token no banco de dados
+      await DeviceRepository.updateToken(identificador, token);
+
+      // Retorna o token para o frontend
+      res.status(200).json({ message: 'Autenticação realizada com sucesso.', token });
     } catch (error) {
-      throw new InternalServerError(
-        error instanceof Error ? error.message : 'Erro ao autenticar dispositivo'
-      );
+      console.error('Erro ao autenticar dispositivo:', error);
+      res.status(500).json({ message: 'Erro interno do servidor.' });
     }
   }
 
@@ -103,6 +138,30 @@ class DeviceController {
     } catch (error) {
       throw new InternalServerError(
         error instanceof Error ? error.message : 'Erro ao buscar logs de acesso'
+      );
+    }
+  }
+
+  // Atualizar o token de um dispositivo
+  async updateToken(req: Request, res: Response): Promise<void> {
+    try {
+      const { identificador, token } = req.body;
+
+      if (!identificador || !token) {
+        res.status(400).json({ message: 'Identificador e token são obrigatórios.' });
+        return;
+      }
+
+      const device = await DeviceRepository.updateToken(identificador, token);
+
+      if (!device) {
+        throw new NotFoundError('Dispositivo não encontrado.');
+      }
+
+      res.status(200).json({ message: 'Token atualizado com sucesso.', device });
+    } catch (error) {
+      throw new InternalServerError(
+        error instanceof Error ? error.message : 'Erro ao atualizar token.'
       );
     }
   }
