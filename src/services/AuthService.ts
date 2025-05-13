@@ -1,50 +1,63 @@
-//// filepath: c:\Users\dioney\Documents\projeto\pdv\novo backend\src\services\AuthService.ts
-import jwt, { Secret, SignOptions } from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { JWT_CONFIG } from '../config/auth';
+import AuthRepository from '../repositories/AuthRepository';
 import { TokenPayload } from '../types/AuthTypes';
+import { AppError } from '../errors/AppError';
+import { ROLE_PREFIX_MAP } from '../utils/ROLE_PREFIX_MAP';
+import { RoleType } from '../types/RoleType';
+import { generateToken } from '../utils/tokenUtil';
 
 export class AuthService {
-  static generateToken(payload: TokenPayload): string {
-    // Garante que JWT_CONFIG.secret seja uma string não vazia
-    if (!JWT_CONFIG.secret) {
-      throw new Error('JWT secret não configurado corretamente');
+  // Validar login por senha
+  static async login(password: string, identificador: string, chaveSecreta: string) {
+    // Descriptografar os 2 primeiros dígitos da senha para identificar a role
+    const rolePrefix = password.substring(0, 2);
+
+    // Mapear o prefixo para a role correspondente
+    const role: RoleType | undefined = Object.keys(ROLE_PREFIX_MAP).find(
+      (key) => ROLE_PREFIX_MAP[key as keyof typeof ROLE_PREFIX_MAP] === rolePrefix
+    ) as RoleType | undefined;
+
+    if (!role) {
+      throw new AppError('Role inválida.', 401);
     }
 
-    // Força o expiresIn a ser aceito como string ou number
-    const expires: number = Number(JWT_CONFIG.expiresIn);
+    // Buscar todos os funcionários com a role correspondente
+    const employees = await AuthRepository.findEmployeesByRole(role);
+    if (!employees || employees.length === 0) {
+      throw new AppError('Nenhum funcionário encontrado para a role especificada.', 404);
+    }
 
-    const secretKey: Secret = JWT_CONFIG.secret;
-    const options: SignOptions = {
-      expiresIn: expires,
-      algorithm: 'HS256',
+    // Validar a senha para cada funcionário encontrado
+    let validEmployee = null;
+    for (const employee of employees) {
+      const isPasswordValid = await bcrypt.compare(password, employee.passwordHash || '');
+      if (isPasswordValid) {
+        validEmployee = employee;
+        break;
+      }
+    }
+
+    if (!validEmployee) {
+      throw new AppError('Senha inválida.', 401);
+    }
+
+    // Validar o dispositivo
+    const device = await AuthRepository.findDeviceByIdentificador(identificador);
+    if (!device || device.chaveSecreta !== chaveSecreta) {
+      throw new AppError('Dispositivo não autorizado.', 401);
+    }
+
+    // Gerar token JWT
+    const tokenPayload: TokenPayload = {
+      employeesId: validEmployee.id,
+      deviceId: device.id,
+      role: validEmployee.role,
     };
 
-    // jwt.sign() aceita string | object | Buffer como payload
-    return jwt.sign(
-      { ...payload },   // espalha as propriedades do payload
-      secretKey,
-      options
-    );
-  }
+    const token = generateToken(tokenPayload);
 
-  static verifyToken(token: string): TokenPayload {
-    if (!token) {
-      throw new Error('Token não fornecido');
-    }
-
-    if (!JWT_CONFIG.secret) {
-      throw new Error('JWT secret não configurado corretamente');
-    }
-
-    const decoded = jwt.verify(token, JWT_CONFIG.secret, {
-      algorithms: ['HS256'],
-    });
-
-    if (typeof decoded === 'string') {
-      throw new Error('Token malformado');
-    }
-
-    // Convertendo para nosso tipo esperado
-    return decoded as TokenPayload;
+    return { token, employee: validEmployee, device };
   }
 }

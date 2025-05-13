@@ -10,6 +10,7 @@ import DeviceRepository from '../repositories/DeviceRepository';
 import DeviceAccessLogRepository from '../repositories/DeviceAccessLogRepository';
 import { DeviceType } from '../types/DevicesType';
 import { AuthService } from '../services/AuthService';
+import { generateToken } from '../utils/tokenUtil';
 
 class DeviceController {
   // Buscar todos os dispositivos
@@ -112,11 +113,11 @@ async authenticate(req: Request, res: Response): Promise<void> {
         return;
       }
 
-      // Gera o token para o dispositivo
-      const token = AuthService.generateToken({
+// Gera o token para o dispositivo
+      const token = generateToken({
         deviceId: device.id,
         role: device.tipo,
-        employeesId: device.employeesId
+        employeesId: device.employeesId,
       });
 
       // Atualiza o token no banco de dados

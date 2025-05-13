@@ -13,6 +13,7 @@ import swaggerSpec from './swagger';
 import swaggerUi from 'swagger-ui-express';
 import bcrypt from 'bcrypt';
 import { AuthService } from './services/AuthService';
+import { generateToken } from './utils/tokenUtil';
 
 export const app: Application = express(); // Instância do Express
 const PORT = process.env.PORT || 3000;
@@ -82,7 +83,7 @@ async function seedSuperAdminDevice(): Promise<void> {
 
   if (!existingDevice) {
 // Gera o token para o dispositivo super_admin
-    const token = AuthService.generateToken({
+    const token = generateToken({
       role: 'super_admin',
       employeesId: superAdmin.id
     });

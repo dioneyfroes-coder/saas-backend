@@ -7,10 +7,12 @@ import saleRoutes from './saleRoutes';
 import saleItemRoutes from './saleItemRoutes';
 import financeRoutes from './financeRoutes';
 import employeesRoutes from './employeesRoutes';
+import authRoutes from './authRoutes';
 
 const router = Router();
 
 // Rotas para cada recurso da aplicação, importadas e acopladas abaixo
+router.use('/auth', authRoutes);
 router.use('/products', productRoutes);
 router.use('/devices', deviceRoutes);
 router.use('/device-access-logs', deviceAccessLogRoutes);
