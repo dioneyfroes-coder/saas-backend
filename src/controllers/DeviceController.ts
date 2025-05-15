@@ -1,18 +1,12 @@
 //// filepath: c:\Users\dioney\Documents\projeto\pdv\novo backend\src\controllers\DeviceController.ts
 import { Request, Response } from 'express';
 import DeviceService from '../services/DeviceService';
-import {
-  NotFoundError,
-  InternalServerError,
-  UnauthorizedError
-} from '../errors/AppError';
+import {  NotFoundError, InternalServerError,} from '../errors/AppError';
 import DeviceRepository from '../repositories/DeviceRepository';
-import DeviceAccessLogRepository from '../repositories/DeviceAccessLogRepository';
-import { DeviceType } from '../types/DevicesType';
-import { AuthService } from '../services/AuthService';
 import { generateToken } from '../utils/tokenUtil';
 
 class DeviceController {
+
   // Buscar todos os dispositivos
   async getAll(req: Request, res: Response): Promise<void> {
     try {
@@ -45,12 +39,9 @@ class DeviceController {
     try {
       const device = await DeviceService.createDevice(req.body);
 
-      // Registrar log de criação
-    await DeviceAccessLogRepository.create({
-      deviceId: device.id,
-      ip: req.ip,
-      userAgent: req.headers['user-agent'] || 'unknown',
-    });
+      if (!device) {
+        throw new InternalServerError('Erro ao criar dispositivo');
+      }
       res.status(201).json(device);
     } catch (error) {
       throw new InternalServerError(
@@ -63,16 +54,10 @@ class DeviceController {
   async update(req: Request, res: Response): Promise<void> {
     try {
       const device = await DeviceService.updateDevice(Number(req.params.id), req.body);
+
       if (!device) {
         throw new NotFoundError('Dispositivo não encontrado');
       }
-
-      // Registrar log de alteração
-    await DeviceAccessLogRepository.create({
-      deviceId: device.id,
-      ip: req.ip,
-      userAgent: req.headers['user-agent'] || 'unknown',
-    });
       res.json(device);
     } catch (error) {
       throw new InternalServerError(
@@ -131,18 +116,6 @@ async authenticate(req: Request, res: Response): Promise<void> {
     }
   }
 
-  // Buscar logs de acesso de um dispositivo
-  async getAccessLogs(req: Request, res: Response): Promise<void> {
-    try {
-      const logs = await DeviceService.getAccessLogs(Number(req.params.id));
-      res.json(logs);
-    } catch (error) {
-      throw new InternalServerError(
-        error instanceof Error ? error.message : 'Erro ao buscar logs de acesso'
-      );
-    }
-  }
-
   // Atualizar o token de um dispositivo
   async updateToken(req: Request, res: Response): Promise<void> {
     try {
@@ -166,6 +139,6 @@ async authenticate(req: Request, res: Response): Promise<void> {
       );
     }
   }
-}
+};
 
 export default new DeviceController();

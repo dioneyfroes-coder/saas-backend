@@ -6,6 +6,8 @@ import {
   InternalServerError
 } from '../errors/AppError';
 import { RegisterEmployeeDTO } from '../types/RegisterEmployeeDTOType';
+import DeviceAccessLogService from '../services/DeviceAccessLogService';
+import { AuthenticatedRequest } from '../types/AuthTypes';
 
 class EmployeesController {
   async create(req: Request, res: Response): Promise<void> {
@@ -45,12 +47,20 @@ class EmployeesController {
     }
   }
 
-  async update(req: Request, res: Response): Promise<void> {
+  async update(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const employee = await EmployeesService.updateEmployee(Number(req.params.id), req.body);
       if (!employee) {
         throw new NotFoundError('Funcionário não encontrado.');
       }
+
+      // Registrar log de alteração
+      await DeviceAccessLogService.createLog({
+        deviceId: req.deviceId, // Assuming the device is authenticated
+        ip: req.ip,
+        userAgent: req.headers['user-agent'] || 'unknown',
+      });
+
       res.json(employee);
     } catch (err) {
       throw new InternalServerError(

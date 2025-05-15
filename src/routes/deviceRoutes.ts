@@ -120,25 +120,6 @@ router.delete('/:id', DeviceController.delete);
 
 /**
  * @swagger
- * /api/devices/logs/{id}:
- *   get:
- *     summary: Listar logs de acesso de um dispositivo
- *     tags:
- *       - Devices
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Lista de logs de acesso relacionados ao dispositivo
- */
-router.get('/logs/:id', DeviceController.getAccessLogs);
-
-/**
- * @swagger
  * /api/devices/authenticate:
  *   post:
  *     summary: Autenticar um dispositivo

@@ -29,10 +29,10 @@ export function authMiddleware(req: AuthenticatedRequest, res: Response, next: N
 
     // Adiciona os dados do token ao objeto `req`
     req.user = decoded;
+    req.deviceId = decoded.deviceId; // Adiciona o deviceId ao objeto req
 
     // Adiciona campos específicos ao `req` (se necessário)
     req.employeesId = decoded.employeesId;
-    req.deviceId = decoded.deviceId;
     req.role = decoded.role;
 
     next(); // Continua para o próximo middleware ou controlador

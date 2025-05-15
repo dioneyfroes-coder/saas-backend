@@ -11,7 +11,9 @@
       "skipLibCheck": false,
       "resolveJsonModule": true,
       "moduleResolution": "Node",             
-      "types": ["node", "express", "jsonwebtoken", "joi"]  
+      "types": ["node", "express", "jsonwebtoken", "joi"],
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true  
     },
     "include": ["./src/**/*"],
     "exclude": ["node_modules"]

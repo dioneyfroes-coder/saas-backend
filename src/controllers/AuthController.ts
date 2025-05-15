@@ -1,12 +1,13 @@
 //// filepath: c:\Users\dioney\Documents\projeto\pdv\novo backend\src\controllers\AuthController.ts
 import { Request, Response } from 'express';
 import { AuthService } from '../services/AuthService';
+import DeviceAccessLogService from '../services/DeviceAccessLogService';
 
 class AuthController {
   // Login por senha
   async login(req: Request, res: Response): Promise<void> {
     try {
-      const { password, identificador, chaveSecreta } = req.body;
+      const { password, identificador, chaveSecreta, ip } = req.body;
 
       if (!password || !identificador || !chaveSecreta) {
         res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
@@ -18,6 +19,13 @@ class AuthController {
         identificador,
         chaveSecreta
       );
+
+            // Registrar log de acesso
+      await DeviceAccessLogService.createLog({
+        deviceId: device.id,
+        ip: ip,
+        userAgent: req.headers['user-agent'] || 'unknown',
+      });
 
       res.status(200).json({
         message: 'Login realizado com sucesso.',

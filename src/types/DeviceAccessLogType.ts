@@ -2,7 +2,7 @@
 export interface DeviceAccessLogType {
   id: number;
   deviceId: number;        // Em vez de number | null (no schema está como Int obrigatório)
-  accessedAt: Date;
+  accessedAt?: Date;
   ip?: string;
   userAgent?: string;
-}
+};

@@ -14,6 +14,7 @@ import swaggerUi from 'swagger-ui-express';
 import bcrypt from 'bcrypt';
 import { AuthService } from './services/AuthService';
 import { generateToken } from './utils/tokenUtil';
+import { getLocalDateAsUTC } from './utils/getLocalDateAsUTC';
 
 export const app: Application = express(); // Instância do Express
 const PORT = process.env.PORT || 3000;
@@ -115,12 +116,12 @@ const startServer = async () => {
     // Executa o seed do super_admin
     await seedSuperAdmin();
     await seedSuperAdminDevice();
-
+    const horario = getLocalDateAsUTC();
     // Inicia o servidor
     app.listen(PORT, () => {
       console.log(`Servidor rodando em http://localhost:${PORT}`); // Atualizado para incluir o localhost
-
-      console.log('Servidor iniciado com sucesso!');
+      console.log(`Documentação Swagger disponível em http://localhost:${PORT}/docs`);
+      console.log(`Servidor iniciado com sucesso na data: ${horario}`);
     });
   } catch (error) {
     console.error('Erro ao conectar ao banco de dados:', error);

@@ -89,7 +89,7 @@ enum FinanceCategory {
 model device_access_logs {
   id         Int      @id @default(autoincrement())
   deviceId   Int
-  accessedAt DateTime @default(now())
+  accessedAt DateTime 
   ip         String?  @db.VarChar(255)
   userAgent  String?  @db.VarChar(255)
 

@@ -2,19 +2,13 @@
 import DeviceRepository from '../repositories/DeviceRepository';
 import DeviceAccessLogRepository from '../repositories/DeviceAccessLogRepository';
 import { DeviceType } from '../types/DevicesType';
+import { LogDeviceAction } from '../decorators/LogDeviceAction';
 
 class DeviceService {
   // Autenticar dispositivo
   async authenticateDevice(identificador: string, chaveSecreta: string | undefined, ip: string): Promise<DeviceType | null> {
     const device = await DeviceRepository.findByIdentificador(identificador);
     const sucesso = !!device && device.ativo && (!device.chaveSecreta || device.chaveSecreta === chaveSecreta);
-
-    // Log de acesso
-    await DeviceAccessLogRepository.create({
-      deviceId: device ? device.id : 0, // Default to 0 if device is null
-      // Se quiser vincular a employeesId, inclua aqui
-      ip,
-    });
 
     return sucesso ? device : null;
   }
@@ -30,12 +24,17 @@ class DeviceService {
   }
 
   // Criar um novo dispositivo
+   @LogDeviceAction()
   async createDevice(data: Omit<DeviceType, 'id' | 'createdAt' | 'updatedAt'>): Promise<DeviceType> {
     return await DeviceRepository.create(data);
   }
 
   // Atualizar um dispositivo
-  async updateDevice(id: number, data: Partial<Omit<DeviceType, 'id' | 'createdAt' | 'updatedAt'>>): Promise<DeviceType | null> {
+  @LogDeviceAction()
+  async updateDevice(
+    id: number,
+    data: Partial<Omit<DeviceType, 'id' | 'createdAt' | 'updatedAt'>>
+  ): Promise<DeviceType | null> {
     return await DeviceRepository.update(id, data);
   }
 

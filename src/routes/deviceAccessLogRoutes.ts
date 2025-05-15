@@ -55,4 +55,30 @@ router.get('/:deviceId', authMiddleware, DeviceAccessLogController.getLogsByDevi
  */
 router.post('/', validateBody(createDeviceAccessLogSchema), DeviceAccessLogController.createLog);
 
+/**
+ * @swagger
+ * /api/device-access-logs:
+ *   get:
+ *     summary: Buscar todos os logs de acesso
+ *     tags:
+ *       - Device Access Logs
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *     responses:
+ *       200:
+ *         description: Lista de todos os logs de acesso
+ */
+router.get('/', authMiddleware, DeviceAccessLogController.getAllLogs);
+
 export default router;
