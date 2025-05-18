@@ -142,7 +142,7 @@ enum DocumentType {
 model log {
   id        Int      @id @default(autoincrement())
   level     String
-  message   String   @db.VarChar(1024) // Aumente este valor
+  message   String   @db.Text // Aumente este valor
   timestamp DateTime @default(now())
   stack     String?  @db.VarChar(2048) // Aumente ou use Text
 }
